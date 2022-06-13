@@ -1,24 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-// import { io } from 'socket.io-client';
-
-// const SOCKET_ENDPOINT = 'localhost:3000';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { SocketioService } from 'src/app/socketio.service';
 
 @Component({
   selector: 'app-mainchat',
   templateUrl: './mainchat.component.html',
   styleUrls: ['./mainchat.component.css']
 })
-export class MainchatComponent {
+export class MainchatComponent implements OnInit, OnDestroy {
 
-  // socket: any;
-  constructor() { }
+  constructor(private _socketService: SocketioService) { }
 
-  // ngOnInit(): void {
-  //   this.SetupSocketConnection();
-  // }
-
-  // SetupSocketConnection() {
-  //   this.socket = io();
-  // }
+  ngOnInit(): void {
+    this._socketService.setupSocketConnection();
+  }
+  ngOnDestroy(): void {
+    this._socketService.disconnect()
+  }
 
 }
