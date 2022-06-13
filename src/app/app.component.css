@@ -1,0 +1,40 @@
+nav.gigabar {
+    display: flex;
+    flex-flow: row nowrap;
+    height: 96px;
+    background: black;
+    color: white;
+}
+.gigabar img {
+    height: 100%;
+}
+.gigabar h1 {
+    margin-left: 32px;
+    font-size: 64px;
+    margin-top: 32px;
+}
+.gigabar button {
+    margin-left: auto;
+    border: none;
+    background: rgb(57, 57, 57);
+    font-size: 32px;
+    padding: 0px 16px;
+    color: gray;
+    width: 96px;
+}
+.gigabar button:hover {
+    background: rgb(117, 117, 117);
+    color: white;
+}
+
+
+@media screen and (max-width: 640px) {
+    .gigabar img {
+        display: none;
+    }
+    .gigabar h1 {
+        margin-left: 24px;
+        font-size: 48px;
+        margin-top: 48px;
+    }
+}
