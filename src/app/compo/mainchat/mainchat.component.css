@@ -67,12 +67,13 @@
     width: 128px;
 }
 
-.color {
+/* ici on utilise cette syntaxe pour que le css affecte les éléments qui ont été générés dynamiquement */
+:host ::ng-deep .color {
     width: 24%;
     height: 32px;
     border-radius: 10%;
 }
-.color:hover {
+:host ::ng-deep .color:hover {
     transform: scale(1.1);
 }
 

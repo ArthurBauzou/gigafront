@@ -2,13 +2,15 @@
 <!-- Fenêtre de co -->
 <div class="gigacontain colon" *ngIf="username === ''">
   <h3>Bonjour,</h3>
-  <label for="pseudo">veuillez entrer votre nom</label>
-  <input type="text" id="pseudo" name="pseudo">
-  <button type="submit">se connecter</button>
+  <p>veuillez entrer votre nom</p>
+  <form #usernameForm="ngForm" (ngSubmit)="loguser(usernameForm)" class="colon">
+    <input type="text" id="pseudo" name="username" ngModel>
+    <button type="submit">se connecter</button>
+  </form>
 </div>
 
 <!-- fenetre de chat -->
-<div *ngIf="username !== ''">
+<div [ngClass]="{'displaynone': username == ''}">
   <!-- LISTE DES UTILISATEURS CONNECTÉS -->
   <div></div>
   <!-- CHAT -->
@@ -18,24 +20,16 @@
       <span>{{m.contenu}}</span>
     </div>
     <div class="messageInput">
-      <div class="inline">
-        <div id="colorpicker" (click)="colorpick()">
-          <div style="display:none" #picker>
-            <div class="color" colorCode="#ff2a2aff"></div>
-            <div class="color" colorCode="#ff6600ff"></div>
-            <div class="color" colorCode="#ffcc00ff"></div>
-            <div class="color" colorCode="#44aa00ff"></div>
-            <div class="color" colorCode="#00aad4ff"></div>
-            <div class="color" colorCode="#0000aaff"></div>
-            <div class="color" colorCode="#7137c8ff"></div>
-            <div class="color" colorCode="#c837abff"></div>
-          </div>
+      <!-- <p>{{username}}</p> -->
+      <form class="inline" #messageBox="ngForm" (ngSubmit)="sendMessage(messageBox)">
+        <div id="colorpicker" (click)="picker.classList.toggle('hidd')" class="hid-container">
+          <div class="hid-element hidd" #picker></div>
         </div>
-        <textarea name="message" id=""></textarea>
+        <textarea name="message" id="" ngModel></textarea>
         <button>
           <i class="fa-solid fa-share"></i>
         </button>
-      </div>
+      </form>
     </div>
   </div>
 

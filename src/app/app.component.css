@@ -27,7 +27,6 @@ nav.gigabar {
     color: white;
 }
 
-
 @media screen and (max-width: 640px) {
     .gigabar img {
         display: none;
