@@ -1,6 +1,6 @@
 
 <!-- Fenêtre de co -->
-<div class="gigacontain colon" *ngIf="user.username === ''">
+<div class="gigacontain colon" *ngIf="username === ''">
   <h3>Bonjour,</h3>
   <label for="pseudo">veuillez entrer votre nom</label>
   <input type="text" id="pseudo" name="pseudo">
@@ -8,17 +8,29 @@
 </div>
 
 <!-- fenetre de chat -->
-<div *ngIf="user.username !== ''">
+<div *ngIf="username !== ''">
   <!-- LISTE DES UTILISATEURS CONNECTÉS -->
   <div></div>
   <!-- CHAT -->
   <div class="gigacontain">
     <div *ngFor="let m of messages" class="message">
-      <span [style.color]="m.color" class="messAut">{{m.auteur}} : </span>
-      <span>{{m.body}}</span>
+      <span [style.color]="m.couleur" class="messAut">{{m.auteur}} : </span>
+      <span>{{m.contenu}}</span>
     </div>
     <div class="messageInput">
       <div class="inline">
+        <div id="colorpicker" (click)="colorpick()">
+          <div style="display:none" #picker>
+            <div class="color" colorCode="#ff2a2aff"></div>
+            <div class="color" colorCode="#ff6600ff"></div>
+            <div class="color" colorCode="#ffcc00ff"></div>
+            <div class="color" colorCode="#44aa00ff"></div>
+            <div class="color" colorCode="#00aad4ff"></div>
+            <div class="color" colorCode="#0000aaff"></div>
+            <div class="color" colorCode="#7137c8ff"></div>
+            <div class="color" colorCode="#c837abff"></div>
+          </div>
+        </div>
         <textarea name="message" id=""></textarea>
         <button>
           <i class="fa-solid fa-share"></i>

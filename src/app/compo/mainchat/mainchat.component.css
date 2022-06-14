@@ -52,6 +52,30 @@
     padding: 0;
 }
 
+#colorpicker {
+    width: 24px;
+    position: relative;
+}
+
+#colorpicker>div {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    transform: translate(80%, 120%);
+    display: flex;
+    flex-flow: row wrap;
+    width: 128px;
+}
+
+.color {
+    width: 24%;
+    height: 32px;
+    border-radius: 10%;
+}
+.color:hover {
+    transform: scale(1.1);
+}
+
 @media screen and (max-width: 1128px) {
     .gigacontain {
         width: 70%;
