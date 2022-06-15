@@ -31,14 +31,26 @@
 }
 
 .userlistDisplay {
-    width: 128px;
-    padding: 24px 12px;
+    width: 96px;
+    padding: 22px 12px;
+}
+.userlistDisplay>div {
+    position: relative;
 }
 .userlistDisplay p {
+    margin: 5px 0px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden; 
     font-weight: 600;
+    font-size: 14px;
+}
+.userlistDisplay i {
+    position: absolute;
+    left: -18px;
+    top: 7px;
+    font-size: 12px;
+    color: rgb(74,74,74)
 }
 .userlistDisplay button {
     margin-top: auto;

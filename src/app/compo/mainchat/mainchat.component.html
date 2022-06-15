@@ -13,9 +13,10 @@
 <div [ngClass]="{'displaynone': user.name == ''}" class="inline" id="mainChat" >
   <!-- LISTE DES UTILISATEURS CONNECTÉS -->
   <div class="userlistDisplay colon">
-    <p *ngFor="let u of userlist" [style.color]="u.color">{{u.name}}
+    <div *ngFor="let u of userlist">
+      <p [style.color]="u.color">{{u.name}}</p>
       <i class="fa-solid fa-star" *ngIf="u.id == user.id"></i>
-    </p>
+    </div>
     <button (click)="logout()">Deconnexion</button>
   </div>
   <!-- CHAT -->
@@ -28,15 +29,12 @@
     </div>
 
       <form class="inline messageInput" #messageBox="ngForm" (ngSubmit)="sendMessage(messageBox)">
-        <div id="colorpicker" (click)="picker.classList.toggle('hidd')" class="hid-container">
-          <div class="hid-element hidd" #picker></div>
+        <div id="colorpicker" (click)="picker.classList.toggle('hidd')" class="hid-container" [style.background-color]="user.color">
+          <div class="hid-element hidd" #picker>
+            <div class="color" *ngFor="let c of colorlist" [style.background-color]="c" (click)="changeColor(c)"></div>
+          </div>
         </div>
-        <textarea 
-          name="message"
-          ngModel
-          (keyup.enter)="sendMessage(messageBox)"
-          (ngModelChange)="adjustHeight(messageB)"
-          #messageB>
+        <textarea name="message" ngModel (keyup.enter)="sendMessage(messageBox)" (ngModelChange)="adjustHeight(messageB)" #messageB>
         </textarea>
         <button>
           <i class="fa-solid fa-paper-plane" style="font-size:24px; color:rgb(198, 198, 198);"></i>

@@ -27,27 +27,24 @@ export class SocketioService {
   sendMessage(message:Message) {
     this.socket.emit('send0', message)
   }
-  userCo(user:any) {
-    this.socket.emit('join0', user)
-  }
   userDeco(user:any) {
     this.socket.emit('leave0', user)
   }
-  userColor(user:any) {
+  userColorChange(user:any) {
     this.socket.emit('color0', user)
   }
 
-  setupSocketConnection() {
+  setupSocketConnection(user:any) {
     this.socket = io(environment.SOCKET_ENDPOINT)
-    // écoute de la diffusion des messages
+    this.socket.emit('join0', user)
     this.socket.on('msg0', (msg:any) => { this.message$.next(msg) })
-    // écoute de la diffusion de la liste des utilisateurs
-    this.socket.on('user0', (userlist:any) => { 
-      this.users$.next(userlist) 
-    })
+    this.socket.on('user0', (userlist:any) => { this.users$.next(userlist) })
   }
   disconnect(){
-    if(this.socket){this.socket.disconnect()}
+    if(this.socket){
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+    }
   }
 
 }
