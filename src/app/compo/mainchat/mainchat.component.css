@@ -1,12 +1,8 @@
 .gigacontain {
     border: 1px gray solid;
-    border-radius: 12px;
     padding: 16px 32px;
-    margin: 48px auto;
     width: 50%;
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 }
-
 .gigacontain input {
     font-size: 32px;
     margin: 12px 0px;
@@ -14,6 +10,36 @@
 .gigacontain button {
     width: 30%;
     margin-left: auto;
+    padding: 8px;
+    border: none;
+    background: black;
+    color: white;
+    font-size: 14px;
+}
+.gigacontain button:hover {
+    transform: scale(1.1);
+}
+
+.messageDisplay {
+ flex-grow: 1;
+}
+
+#mainChat {
+    margin: 24px auto;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.userlistDisplay {
+    width: 128px;
+    padding-top: 31px;
+    padding-right: 12px;
+}
+.userlistDisplay p {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden; 
+    font-weight: 600;
 }
 
 .inline {
@@ -25,25 +51,30 @@
 
 .message {
     font-size: 14px;
-    border-bottom: 0.5px rgb(213, 213, 213) solid;
-    padding: 12px 0px 16px 0px;
-    line-height: 18px;
+    /* border-bottom: 0.5px rgb(213, 213, 213) solid; */
+    padding: 8px 4px 8px 4px;
+    line-height: 16px;
 }
 .messAut {
     font-weight: 600;
 }
 
 .messageInput {
-    margin-top: 32px;
+    margin: 0;
+    margin-top: 8px;
 }
 .messageInput textarea {
     flex: 7;
-    border: 1px gray solid;
+    border: none;
+    border-top: 1px gray solid;
+    border-bottom: 1px gray solid;
     resize: none;
     outline: none;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 14px;
-    padding: 8px;
+    padding: 12px 8px;
+    margin: 0;
+    height: 18px;
 }
 .messageInput button {
     flex: 1;
@@ -61,7 +92,7 @@
     position: absolute;
     top: 0px;
     right: 0px;
-    transform: translate(80%, 120%);
+    transform: translate(80%, -120%);
     display: flex;
     flex-flow: row wrap;
     width: 128px;
@@ -76,6 +107,11 @@
 :host ::ng-deep .color:hover {
     transform: scale(1.1);
 }
+
+#mainChat.displaynone {
+    display: none;
+}
+
 
 @media screen and (max-width: 1128px) {
     .gigacontain {
@@ -92,5 +128,8 @@
         margin: 12px auto;
         width: 90%;
         box-shadow: none;
+    }
+    .userlistDisplay {
+        display: none
     }
 }

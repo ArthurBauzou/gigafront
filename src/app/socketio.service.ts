@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { io } from 'socket.io-client'
 import { environment } from 'src/environments/environment';
 import { Message } from './models/message.model';
-import { BehaviorSubject, Observable } from 'rxjs'
+import { BehaviorSubject, Observable, Subject } from 'rxjs'
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class SocketioService {
 
   socket:any;
 
-  private message$ = new BehaviorSubject<Message>(new Message('','',''))
+  private message$ = new Subject<Message>()
 
   constructor() { }
 

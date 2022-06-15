@@ -4,10 +4,16 @@ body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.hidd {
-    visibility: hidden;
+app-root {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100vh;
+}
+app-mainchat {
+    flex-grow: 1;
+    display: flex;
 }
 
-.displaynone {
-    display: none;
+.hidd {
+    visibility: hidden;
 }

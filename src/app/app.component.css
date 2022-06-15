@@ -4,6 +4,7 @@ nav.gigabar {
     height: 96px;
     background: black;
     color: white;
+    flex: 0 0 auto;
 }
 .gigabar img {
     height: 100%;
@@ -25,6 +26,12 @@ nav.gigabar {
 .gigabar button:hover {
     background: rgb(117, 117, 117);
     color: white;
+}
+
+div.reste {
+    flex: 1 1 auto;
+    display: flex;
+    flex-flow: column nowrap;
 }
 
 @media screen and (max-width: 640px) {
