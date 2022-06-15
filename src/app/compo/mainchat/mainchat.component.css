@@ -32,14 +32,24 @@
 
 .userlistDisplay {
     width: 128px;
-    padding-top: 31px;
-    padding-right: 12px;
+    padding: 24px 12px;
 }
 .userlistDisplay p {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden; 
     font-weight: 600;
+}
+.userlistDisplay button {
+    margin-top: auto;
+    padding: 8px;
+    border: none;
+    background: black;
+    color: white;
+    font-size: 14px;
+}
+.userlistDisplay button:hover {
+    transform: scale(1.1);
 }
 
 .inline {

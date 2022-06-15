@@ -1,6 +1,6 @@
 
 <!-- Fenêtre de co -->
-<div class="gigacontain colon" *ngIf="username === ''" style="margin: 48px auto;">
+<div class="gigacontain colon" *ngIf="user.name === ''" style="margin: 48px auto;">
   <h3>Bonjour,</h3>
   <p>Veuillez entrer votre nom</p>
   <form #usernameForm="ngForm" (ngSubmit)="loguser(usernameForm)" class="colon">
@@ -10,10 +10,13 @@
 </div>
 
 <!-- fenetre de chat -->
-<div [ngClass]="{'displaynone': username == ''}" class="inline" id="mainChat" >
+<div [ngClass]="{'displaynone': user.name == ''}" class="inline" id="mainChat" >
   <!-- LISTE DES UTILISATEURS CONNECTÉS -->
-  <div class="userlistDisplay">
-    <p *ngFor="let u of userlist" [style.color]="u.color">{{u.username}}</p>
+  <div class="userlistDisplay colon">
+    <p *ngFor="let u of userlist" [style.color]="u.color">{{u.name}}
+      <i class="fa-solid fa-star" *ngIf="u.id == user.id"></i>
+    </p>
+    <button (click)="logout()">Deconnexion</button>
   </div>
   <!-- CHAT -->
   <div class="gigacontain colon">
