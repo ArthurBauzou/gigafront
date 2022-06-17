@@ -34,8 +34,10 @@
   <div class="gigacontain colon">
     <div class="messageDisplay">
       <div *ngFor="let m of messages" class="message">
-        <span [style.color]="m.couleur" class="messAut">{{m.auteur}} : </span>
-        <span>{{m.contenu}}</span>
+        <span [style.color]="m.couleur" class="messAut" *ngIf="m.auteur">{{m.auteur}} : </span>
+        <span [ngClass]="{
+          'gigaCode' : m.style == '!code'
+        }" >{{m.contenu}}</span>
       </div>
     </div>
 

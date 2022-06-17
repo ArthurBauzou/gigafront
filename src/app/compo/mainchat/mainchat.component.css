@@ -21,6 +21,7 @@
     transform: scale(1.1);
 }
 
+/*  */
 .reconnect {
     margin-top: 32px;
     margin-left: auto;
@@ -50,7 +51,17 @@
 }
 
 .messageDisplay {
- flex-grow: 1;
+    flex-grow: 1;
+}
+.messageDisplay span {
+    white-space: pre-wrap;
+}
+.messageDisplay span.gigaCode {
+    display: block;
+    padding: 8px;
+    font-family:'Courier New', Courier, monospace;
+    font-size: 13px;
+    background: beige;
 }
 
 #mainChat {

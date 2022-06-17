@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/message.model';
 import { SocketioService } from 'src/app/socketio.service';
@@ -32,7 +32,8 @@ export class MainchatComponent {
     private _jwtHelper: JwtHelperService
     ) { 
     this.messageSub = this._socketService.watchMessages().subscribe((m) => {
-      this.messages.push(m)
+      this.parseMessage(m)
+      // this.messages.push(m)
     });
     this.usersConnectedSub = this._socketService.watchUsers().subscribe((list) => {
       this.userlist = list;
@@ -53,7 +54,7 @@ export class MainchatComponent {
       this.reconnect()
     }
   }
-
+  
   // fonctions de gbestion du stockage local
   checkToken() {
     let tkn: string | null = localStorage.getItem('userToken')
@@ -86,10 +87,12 @@ export class MainchatComponent {
 
   // fonctions d’interactions avec le socket
   loguser(form:any) {
-    this.user.name = form.value.username
-    this.user.id = this.generateId()
-    this.user.color = this.colorlist[Math.floor(Math.random()*this.colorlist.length)]
-    this._socketService.setupSocketConnection(this.user);
+    if (form.value.username != '') {
+      this.user.name = form.value.username
+      this.user.id = this.generateId()
+      this.user.color = this.colorlist[Math.floor(Math.random()*this.colorlist.length)]
+      this._socketService.setupSocketConnection(this.user);
+    }
   }
   logout() {
     this._socketService.disconnect();
@@ -104,6 +107,27 @@ export class MainchatComponent {
       this._socketService.sendMessage(message)
     }
   }
+
+  parseMessage(mes:Message) {
+    let body = mes.contenu
+    let command
+    if (body.startsWith("!")) { 
+      let commandSize = body.indexOf(' ')
+      if (commandSize == -1) { command = body ; body = '' }
+      else {
+        command = body.substring(0,commandSize)
+        body = body.substring(commandSize+1,body.length)
+      }
+      mes.contenu = command
+      this.messages.push(mes)
+      let mess1 = new Message('','',body,command,mes.date)
+      if (mess1.contenu != '') {this.messages.push(mess1)}
+    }
+    else {
+      this.messages.push(mes)
+    }
+  }
+
 
   // FONCTIONS UTILITAIRES
   changeColor(col:string) {
