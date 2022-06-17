@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { io } from 'socket.io-client'
 import { environment } from 'src/environments/environment';
 import { Message } from './models/message.model';
-import { BehaviorSubject, Observable, Subject } from 'rxjs'
+import { Subject } from 'rxjs'
 
 @Injectable({
   providedIn: 'root'
@@ -35,10 +35,11 @@ export class SocketioService {
   }
 
   setupSocketConnection(user:any) {
-    this.socket = io(environment.SOCKET_ENDPOINT)
+    this.socket = io('http://glub.fr:3000')
     this.socket.emit('join0', user)
     this.socket.on('msg0', (msg:any) => { this.message$.next(msg) })
     this.socket.on('user0', (userlist:any) => { this.users$.next(userlist) })
+    this.socket.on('token0', (token:string) => { localStorage.setItem("userToken", token) })
   }
   disconnect(){
     if(this.socket){

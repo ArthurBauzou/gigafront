@@ -1,34 +1,36 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/message.model';
 import { SocketioService } from 'src/app/socketio.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
+
 
 @Component({
   selector: 'app-mainchat',
   templateUrl: './mainchat.component.html',
   styleUrls: ['./mainchat.component.css']
 })
-export class MainchatComponent implements OnDestroy {
+export class MainchatComponent {
   
   colorlist = ['#D40000ff','#ff6600ff','#D4AA00ff','#558b2fff','#00CCFFFF','#0066FFff','#7137c8ff','#c837abff']
-// colorlist = [ '#37474F','#3949AB','#1E88E5','#00B8D4',
-//               '#4E342E','#1B5E20','#558B2F','#8BEB09',
-//               "#4527A0","#880E4F","#C62828","#FF4081"]
-  user = {
-    id: '',
-    name: '',
-    color: ''
-  }
+  user = {id: '', name: '', color: '' }
   messages: Message[] = []
-  userlist: any[] = []
 
+  userlist = new Map;
+  token:any = {}
+  params:any = {
+    autoreco: false
+  }
   messageSub: Subscription;
   usersConnectedSub: Subscription;
   
   @ViewChild('messageB') textarea!:ElementRef
   @ViewChild('picker') picker!:ElementRef
 
-  constructor(private _socketService: SocketioService) { 
+  constructor(
+    private _socketService: SocketioService,
+    private _jwtHelper: JwtHelperService
+    ) { 
     this.messageSub = this._socketService.watchMessages().subscribe((m) => {
       this.messages.push(m)
     });
@@ -37,14 +39,51 @@ export class MainchatComponent implements OnDestroy {
     })
    }
   
-  // fonctions automatiques du cycle de vie des composants
+  // INITIALISATIONS
+  iniTextarea() {
+    this.textarea.nativeElement.addEventListener('keydown', (e:any) => {
+      if(e.key == 'Enter' && !e.shiftKey) { e.preventDefault() }
+    })
+  }
   ngAfterViewInit() {
-    this.iniTextarea()
+    this.iniTextarea();
+    this.checkToken();
+    this.checkParams();
+    if (this.params.autoreco) {
+      this.reconnect()
+    }
   }
-  ngOnDestroy(): void {
-    this._socketService.disconnect()
+
+  // fonctions de gbestion du stockage local
+  checkToken() {
+    let tkn: string | null = localStorage.getItem('userToken')
+    if (tkn) { this.token = this._jwtHelper.decodeToken(tkn) }
   }
-  
+  checkParams() {
+    let params = localStorage.getItem('userParams')
+    if (params) {this.params =  JSON.parse(params)}
+  }
+  reconnect() {
+    this.user.name = this.token.name;
+    this.user.color = this.token.color;
+    this.user.id = this.token.id;
+    this._socketService.setupSocketConnection(this.user);
+  }
+  purgeToken() {
+    this.token = {}
+    localStorage.removeItem('userToken')
+  }
+  autoconnect() {
+    if (!this.params.autoreco) {
+      localStorage.setItem('userParams', '{"autoreco": true}')
+      this.params.autoreco = true
+    }
+    else {
+      localStorage.setItem('userParams', '{"autoreco": false}')
+      this.params.autoreco = false
+    }
+  }
+
   // fonctions d’interactions avec le socket
   loguser(form:any) {
     this.user.name = form.value.username
@@ -56,6 +95,7 @@ export class MainchatComponent implements OnDestroy {
     this._socketService.disconnect();
     this.messages = []
     this.user = {id:'',name:'',color:''};
+    this.checkToken();
   }
   sendMessage(form:any) {
     if (form.value.message != '') {
@@ -63,13 +103,6 @@ export class MainchatComponent implements OnDestroy {
       form.reset();
       this._socketService.sendMessage(message)
     }
-  }
-  
-  // INITIALISATIONS
-  iniTextarea() {
-    this.textarea.nativeElement.addEventListener('keydown', (e:any) => {
-      if(e.key == 'Enter' && !e.shiftKey) { e.preventDefault() }
-    })
   }
 
   // FONCTIONS UTILITAIRES

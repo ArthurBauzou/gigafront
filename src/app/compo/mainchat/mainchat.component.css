@@ -1,3 +1,4 @@
+/* ACCUEIL */
 .gigacontain {
     border: 1px gray solid;
     padding: 16px 32px;
@@ -20,6 +21,34 @@
     transform: scale(1.1);
 }
 
+.reconnect {
+    margin-top: 32px;
+    margin-left: auto;
+}
+.reconnect a:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+.reconnect span {
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 600;
+    background: gray;
+    color: white;
+    border-radius: 20%/50%;
+    padding: 2px 4px;
+    transform: translateY(-3px);
+    margin-left: 6px;
+    cursor: pointer;
+}
+.reconnect span.active {
+    background: black;
+}
+.reconnect i{
+    margin-left: 8px;
+    cursor: pointer;
+}
+
 .messageDisplay {
  flex-grow: 1;
 }
@@ -28,11 +57,12 @@
     margin: 24px auto;
     justify-content: center;
     flex-grow: 1;
+    position: relative;
 }
 
 .userlistDisplay {
     width: 96px;
-    padding: 22px 12px;
+    padding: 25px 12px;
 }
 .userlistDisplay>div {
     position: relative;
@@ -45,7 +75,7 @@
     font-weight: 600;
     font-size: 14px;
 }
-.userlistDisplay i {
+.userlistDisplay div i {
     position: absolute;
     left: -18px;
     top: 7px;
@@ -63,17 +93,15 @@
 .userlistDisplay button:hover {
     transform: scale(1.1);
 }
+.userlistDisplay .mobileButton {
+    display: none
+}
 
-.inline {
-    display: flex; flex-flow: row nowrap;
-}
-.colon {
-    display: flex; flex-flow: column nowrap;
-}
+
+
 
 .message {
     font-size: 14px;
-    /* border-bottom: 0.5px rgb(213, 213, 213) solid; */
     padding: 8px 4px 8px 4px;
     line-height: 16px;
 }
@@ -81,6 +109,7 @@
     font-weight: 600;
 }
 
+/* MESSAGE INPUT */
 .messageInput {
     margin: 0;
     margin-top: 8px;
@@ -105,11 +134,11 @@
     padding: 0;
 }
 
+/* COLOR PICKER */
 #colorpicker {
     width: 24px;
     position: relative;
 }
-
 #colorpicker>div {
     position: absolute;
     top: 0px;
@@ -119,14 +148,12 @@
     flex-flow: row wrap;
     width: 128px;
 }
-
-/* ici on utilise cette syntaxe pour que le css affecte les éléments qui ont été générés dynamiquement */
-:host ::ng-deep .color {
+.color {
     width: 24%;
     height: 32px;
     border-radius: 10%;
 }
-:host ::ng-deep .color:hover {
+.color:hover {
     transform: scale(1.1);
 }
 
@@ -152,6 +179,6 @@
         box-shadow: none;
     }
     .userlistDisplay {
-        display: none
+        display: none;
     }
 }

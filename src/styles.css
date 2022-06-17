@@ -17,3 +17,9 @@ app-mainchat {
 .hidd {
     visibility: hidden;
 }
+.inline {
+    display: flex; flex-flow: row nowrap;
+}
+.colon {
+    display: flex; flex-flow: column nowrap;
+}
