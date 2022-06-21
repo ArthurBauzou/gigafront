@@ -1,0 +1,29 @@
+.diceContainer {
+    background: rgb(184, 184, 184);
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    flex-flow: row nowrap;
+}
+.diceContainer .dice {
+    background-color: white;
+    border-radius: 24px;
+    margin-right: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-flow: column nowrap;
+    height: 44px;
+    width: 32px;
+    position: relative;
+}
+.diceContainer .dice p {
+    position: absolute;
+    padding: 16px 8px;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    bottom: 0px;
+}
+.diceContainer .diceComm {
+    margin-left: 32px;
+}

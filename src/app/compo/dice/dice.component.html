@@ -1,1 +1,8 @@
-<p>dice works!</p>
+<div class="diceContainer">
+  <div *ngFor="let d of query; index as i" class="dice" (click)="stop(i)">
+    <p></p>
+    <p></p>
+    <p></p>
+  </div>
+  <div class="diceComm"></div>
+</div>

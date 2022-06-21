@@ -119,7 +119,7 @@ export class MainchatComponent {
   parseCommand(command:string, message:Message) {
     let res = new Message('','','','')
     switch(command) {
-
+      // COMMANDE : CODE
       case 'code':
         let codebod = message.parse().body
         if (codebod != '') {
@@ -133,6 +133,12 @@ export class MainchatComponent {
           res.style = 'erreur'
         }
         break;
+      case 'roll':
+        res.style = 'diceroll'
+        res.auteur = message.auteur
+        res.couleur = message.couleur
+        break;
+      // COMMANDE NON RECONNUE
       default :
         res.contenu = 'Commande non reconnue'
         res.style = 'erreur'

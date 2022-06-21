@@ -39,6 +39,7 @@
           'gigaCode' : m.style == 'code',
           'gigaErreur' : m.style == 'erreur'
         }" >{{m.contenu}}</span>
+        <app-dice *ngIf="m.style == 'diceroll'"></app-dice>
       </div>
     </div>
 
