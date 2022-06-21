@@ -56,6 +56,8 @@
 .messageDisplay span {
     white-space: pre-wrap;
 }
+
+/* STYLES DES MESSAGES */
 .messageDisplay span.gigaCode {
     display: block;
     padding: 8px;
@@ -63,6 +65,13 @@
     font-size: 13px;
     background: beige;
 }
+.messageDisplay span.gigaErreur {
+    font-family:'Courier New', Courier, monospace;
+    font-size: 13px;
+    color: gray;
+}
+
+
 
 #mainChat {
     margin: 24px auto;

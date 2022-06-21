@@ -14,7 +14,7 @@
       ?
     </a>
     <i class="fa-solid fa-trash-can" (click)="purgeToken()"></i>
-    <span (click)="autoconnect()" [ngClass]="{'active': params.autoreco == true}">AUTO</span>
+    <span (click)="switchAutocoParam()" [ngClass]="{'active': params.autoreco == true}">AUTO</span>
   </div>
 </div>
 
@@ -36,7 +36,8 @@
       <div *ngFor="let m of messages" class="message">
         <span [style.color]="m.couleur" class="messAut" *ngIf="m.auteur">{{m.auteur}} : </span>
         <span [ngClass]="{
-          'gigaCode' : m.style == '!code'
+          'gigaCode' : m.style == 'code',
+          'gigaErreur' : m.style == 'erreur'
         }" >{{m.contenu}}</span>
       </div>
     </div>

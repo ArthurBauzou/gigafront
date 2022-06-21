@@ -8,11 +8,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainchatComponent } from './compo/mainchat/mainchat.component';
 import { SocketioService } from './socketio.service';
+import { DiceComponent } from './compo/dice/dice.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MainchatComponent
+    MainchatComponent,
+    DiceComponent
   ],
   imports: [
     BrowserModule,

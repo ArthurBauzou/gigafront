@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ReflectiveInjector, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/message.model';
 import { SocketioService } from 'src/app/socketio.service';
@@ -31,9 +31,8 @@ export class MainchatComponent {
     private _socketService: SocketioService,
     private _jwtHelper: JwtHelperService
     ) { 
-    this.messageSub = this._socketService.watchMessages().subscribe((m) => {
-      this.parseMessage(m)
-      // this.messages.push(m)
+    this.messageSub = this._socketService.watchMessages().subscribe((m:Message) => {
+      this.messages.push(m)
     });
     this.usersConnectedSub = this._socketService.watchUsers().subscribe((list) => {
       this.userlist = list;
@@ -50,9 +49,7 @@ export class MainchatComponent {
     this.iniTextarea();
     this.checkToken();
     this.checkParams();
-    if (this.params.autoreco) {
-      this.reconnect()
-    }
+    if (this.params.autoreco) { this.reconnect() }
   }
   
   // fonctions de gbestion du stockage local
@@ -71,10 +68,12 @@ export class MainchatComponent {
     this._socketService.setupSocketConnection(this.user);
   }
   purgeToken() {
-    this.token = {}
     localStorage.removeItem('userToken')
+    this.token = {}
+    localStorage.setItem('userParams', '{"autoreco": false}')
+    this.params.autoreco = false
   }
-  autoconnect() {
+  switchAutocoParam() {
     if (!this.params.autoreco) {
       localStorage.setItem('userParams', '{"autoreco": true}')
       this.params.autoreco = true
@@ -101,51 +100,62 @@ export class MainchatComponent {
     this.checkToken();
   }
   sendMessage(form:any) {
-    if (form.value.message != '') {
-      let message = new Message(this.user.name, this.user.color, form.value.message)
+    let body = form.value.message
+    if (body != '') {
+      let message = new Message(this.user.name, this.user.color, body)
+      let command = message.parse().command
+      if (command != '') { message = this.parseCommand(command, message) }
+      if (message.style == 'erreur') { this.messages.push(message) }
+      else { this._socketService.sendMessage(message) }
       form.reset();
-      this._socketService.sendMessage(message)
     }
   }
-
-  parseMessage(mes:Message) {
-    let body = mes.contenu
-    let command
-    if (body.startsWith("!")) { 
-      let commandSize = body.indexOf(' ')
-      if (commandSize == -1) { command = body ; body = '' }
-      else {
-        command = body.substring(0,commandSize)
-        body = body.substring(commandSize+1,body.length)
-      }
-      mes.contenu = command
-      this.messages.push(mes)
-      let mess1 = new Message('','',body,command,mes.date)
-      if (mess1.contenu != '') {this.messages.push(mess1)}
-    }
-    else {
-      this.messages.push(mes)
-    }
-  }
-
-
-  // FONCTIONS UTILITAIRES
   changeColor(col:string) {
     this.user.color = col;
     this._socketService.userColorChange(this.user)
   }
+
+
+  parseCommand(command:string, message:Message) {
+    let res = new Message('','','','')
+    switch(command) {
+
+      case 'code':
+        let codebod = message.parse().body
+        if (codebod != '') {
+          res.auteur = message.auteur
+          res.couleur = message.couleur
+          res.contenu = codebod
+          res.style = 'code'
+        }
+        else {
+          res.contenu = 'Impossible d’envoyer cette commande vide'
+          res.style = 'erreur'
+        }
+        break;
+      default :
+        res.contenu = 'Commande non reconnue'
+        res.style = 'erreur'
+    }
+    return res
+  }
+
+  // FONCTIONS UTILITAIRES
   adjustHeight(el:HTMLElement){
     el.style.height = "1px";
     el.style.height = (el.scrollHeight - 16)+"px";
     if ((el as HTMLInputElement).value == '') {el.style.height = "18px"}
   }
-  dec2hex (dec:number) {
-    return dec.toString(16).padStart(2, "0")
-  }
-  generateId (len?:number) {
-    var arr = new Uint8Array((len || 40) / 2)
-    window.crypto.getRandomValues(arr)
-    return Array.from(arr, this.dec2hex).join('')
-  }
+  
+
+  // FONCTION DE CRÉATION D’IDENTIFIANT ALÉATOIRE
+    dec2hex (dec:number) {
+      return dec.toString(16).padStart(2, "0")
+    }
+    generateId (len?:number) {
+      var arr = new Uint8Array((len || 40) / 2)
+      window.crypto.getRandomValues(arr)
+      return Array.from(arr, this.dec2hex).join('')
+    }
   
 }
