@@ -1,12 +1,14 @@
 export class Message {
     public auteur: string;
+    public auteurID: string;
     public couleur: string;
-    public contenu: string;
+    public contenu: any;
     public style: string;
     public date: Date;
 
-    constructor(auteur:string, couleur:string, contenu:string, style = '', date: Date = new Date) {
+    constructor(auteur:string, auteurID: string, couleur:string, contenu:any, style = '', date: Date = new Date()) {
         this.auteur = auteur;
+        this.auteurID = auteurID
         this.couleur = couleur;
         this.contenu = contenu;
         this.style = style;

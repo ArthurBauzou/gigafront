@@ -1,8 +1,9 @@
-<div class="diceContainer">
-  <div *ngFor="let d of query; index as i" class="dice" (click)="stop(i)">
+<div class="diceContainer" #dicecontainer>
+  <div *ngFor="let d of dicetype; index as i" class="dice" (click)="pickwin(i)">
+    <p class="winner"></p>
     <p></p>
     <p></p>
     <p></p>
   </div>
-  <div class="diceComm"></div>
+  <div class="diceComm">{{dicetype}}</div>
 </div>

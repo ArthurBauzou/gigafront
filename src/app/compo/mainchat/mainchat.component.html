@@ -20,29 +20,21 @@
 
 <!-- fenetre de chat -->
 <div [ngClass]="{'displaynone': user.name == ''}" class="inline" id="mainChat" >
-  
-  <!-- LISTE DES UTILISATEURS CONNECTÉS -->
-  <div class="userlistDisplay colon" #userlistD>
-    <div *ngFor="let u of userlist | keyvalue">
-      <p [style.color]="u.value.color">{{u.value.name}}</p>
-      <i class="fa-solid fa-star" *ngIf="u.key == user.id"></i>
-    </div>
-    <button (click)="logout()">Deconnexion</button>
-  </div>
 
   <!-- CHAT -->
   <div class="gigacontain colon">
     <div class="messageDisplay">
       <div *ngFor="let m of messages" class="message">
         <span [style.color]="m.couleur" class="messAut" *ngIf="m.auteur">{{m.auteur}} : </span>
-        <span [ngClass]="{
+        <span *ngIf="m.style != 'diceroll'"
+        [ngClass]="{
           'gigaCode' : m.style == 'code',
+          'gigaNotif' : m.style == 'notif',
           'gigaErreur' : m.style == 'erreur'
         }" >{{m.contenu}}</span>
-        <app-dice *ngIf="m.style == 'diceroll'"></app-dice>
+        <app-dice *ngIf="m.style == 'diceroll'" [user]="{id:m.auteurID,color:m.couleur}" [dicetype]="m.contenu"></app-dice>
       </div>
     </div>
-
     <form class="inline messageInput" #messageBox="ngForm" (ngSubmit)="sendMessage(messageBox)">
       <div id="colorpicker" (click)="picker.classList.toggle('hidd')" class="hid-container" [style.background-color]="user.color">
         <div class="hid-element hidd" #picker>
@@ -55,7 +47,17 @@
         <i class="fa-solid fa-paper-plane" style="font-size:24px; color:rgb(198, 198, 198);"></i>
       </button>
     </form>
+  </div>
 
+  <!-- LISTE DES UTILISATEURS CONNECTÉS -->
+  <div class="userlistDisplay colon" #userlistD>
+    <div *ngFor="let u of userlist | keyvalue">
+      <p [style.background-color]="u.value.color">{{u.value.name | slice:0:2}}</p>
+      <!-- <i class="fa-solid fa-star" *ngIf="u.key == user.id"></i> -->
+    </div>
+    <button (click)="logout()">
+      <i class="fa-solid fa-power-off"></i>
+    </button>
   </div>
 
 </div>

@@ -1,10 +1,15 @@
 nav.gigabar {
     display: flex;
     flex-flow: row nowrap;
-    height: 96px;
-    background: black;
+    height: 45px;
     color: white;
     flex: 0 0 auto;
+    transition: 1s;
+    background: rgb(57, 57, 57);
+}
+nav.gigabar:hover {
+    background: black;
+    height: 96px;
 }
 .gigabar img {
     height: 100%;
@@ -14,7 +19,7 @@ nav.gigabar {
     font-size: 64px;
     margin-top: 32px;
 }
-.gigabar button {
+/* .gigabar button {
     margin-left: auto;
     border: none;
     background: rgb(57, 57, 57);
@@ -26,7 +31,7 @@ nav.gigabar {
 .gigabar button:hover {
     background: rgb(117, 117, 117);
     color: white;
-}
+} */
 
 div.reste {
     flex: 1 1 auto;

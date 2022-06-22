@@ -1,8 +1,8 @@
 /* ACCUEIL */
 .gigacontain {
-    border: 1px gray solid;
-    padding: 16px 32px;
-    width: 50%;
+    border-left: 1px black solid;
+    padding: 4px;
+    width: 40%;
 }
 .gigacontain input {
     font-size: 32px;
@@ -49,12 +49,21 @@
     margin-left: 8px;
     cursor: pointer;
 }
-
+#mainChat {
+    /* margin: 24px auto; */
+    justify-content: flex-end;
+    flex-grow: 1;
+    position: relative;
+}
 .messageDisplay {
     flex-grow: 1;
+    height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 .messageDisplay span {
     white-space: pre-wrap;
+    display: inline-flex;
 }
 
 /* STYLES DES MESSAGES */
@@ -70,30 +79,30 @@
     font-size: 13px;
     color: gray;
 }
-
-
-
-#mainChat {
-    margin: 24px auto;
-    justify-content: center;
-    flex-grow: 1;
-    position: relative;
+.messageDisplay span.gigaNotif {
+    font-family:'Courier New', Courier, monospace;
+    font-size: 13px;
+    color: darkseagreen;
 }
 
+
 .userlistDisplay {
-    width: 96px;
-    padding: 25px 12px;
+    flex: 0 64px;
+    padding-top: 12px;
+    background: black;
 }
 .userlistDisplay>div {
     position: relative;
 }
 .userlistDisplay p {
-    margin: 5px 0px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden; 
+    margin: 5px auto;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 18px;
+    color:white;
+    padding: 8px;
+    border-radius: 50%;
+    text-align: center;
+    width: 24px;
 }
 .userlistDisplay div i {
     position: absolute;
@@ -106,24 +115,19 @@
     margin-top: auto;
     padding: 8px;
     border: none;
-    background: black;
+    background: firebrick;
     color: white;
     font-size: 14px;
+    margin-bottom: 16px;
+    transition: 0.2s;
 }
 .userlistDisplay button:hover {
-    transform: scale(1.1);
+    background: red;
 }
-.userlistDisplay .mobileButton {
-    display: none
-}
-
-
-
 
 .message {
     font-size: 14px;
-    padding: 8px 4px 8px 4px;
-    line-height: 16px;
+    padding: 4px;
 }
 .messAut {
     font-weight: 600;
@@ -131,8 +135,8 @@
 
 /* MESSAGE INPUT */
 .messageInput {
-    margin: 0;
-    margin-top: 8px;
+    margin: 8px;
+    margin-top: 16px;
 }
 .messageInput textarea {
     flex: 7;
@@ -182,11 +186,11 @@
 }
 
 
-@media screen and (max-width: 1128px) {
+/* @media screen and (max-width: 1128px) {
     .gigacontain {
         width: 70%;
     }
-}
+} */
 
 @media screen and (max-width: 640px) {
 
