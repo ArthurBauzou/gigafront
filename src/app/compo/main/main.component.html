@@ -1,6 +1,6 @@
 
 <!-- Fenêtre de co -->
-<div class="gigacontain colon" *ngIf="user.name === ''" style="margin: 48px auto;">
+<!-- <div class="gigacontain colon" *ngIf="user.name === ''" style="margin: 48px auto;">
   <h3>Bonjour,</h3>
   <p>Veuillez entrer votre nom</p>
   <form #usernameForm="ngForm" (ngSubmit)="loguser(usernameForm)" class="colon">
@@ -16,10 +16,10 @@
     <i class="fa-solid fa-trash-can" (click)="purgeToken()"></i>
     <span (click)="switchAutocoParam()" [ngClass]="{'active': params.autoreco == true}">AUTO</span>
   </div>
-</div>
+</div> -->
 
 <!-- fenetre de chat -->
-<div [ngClass]="{'displaynone': user.name == ''}" class="inline" id="mainChat" >
+<div class="inline ">
 
   <!-- CHAT -->
   <div class="gigacontain colon">
@@ -34,9 +34,12 @@
         <span *ngIf="m.style != 'diceroll'"
         [ngClass]="{
           'gigaCode' : m.style == 'code',
+          'gigaQuote' : m.style == 'quote',
           'gigaNotif' : m.style == 'notif',
           'gigaErreur' : m.style == 'erreur'
-        }" >{{m.contenu}}</span>
+        }">
+
+        {{m.contenu}}</span>
         <app-dice *ngIf="m.style == 'diceroll'" 
         [diceuser]="{id:m.auteurID,color:m.couleur}" 
         [dicetype]="m.contenu" 
@@ -62,7 +65,7 @@
   <div class="userlistDisplay colon" #userlistD>
     <div *ngFor="let u of userlist | keyvalue">
       <p [style.background-color]="u.value.color">{{u.value.name | slice:0:2}}</p>
-      <!-- <i class="fa-solid fa-star" *ngIf="u.key == user.id"></i> -->
+      <i class="fa-solid fa-star" *ngIf="u.key == user.id"></i>
     </div>
     <button (click)="logout()">
       <i class="fa-solid fa-power-off"></i>

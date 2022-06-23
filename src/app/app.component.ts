@@ -1,4 +1,6 @@
 import { Component, HostListener } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -6,8 +8,20 @@ import { Component, HostListener } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'gigafront';
+  title = 'gigachat';
 
+  userid = ''
+  userSub:Subscription;
+
+  constructor(
+    private _userService: UserService
+  ) {   
+    this.userSub = this._userService.watchUser().subscribe((user) => {
+      this.userid = user.id
+    })
+  }
+
+  // Fonction d’afficahge / dissimulation
   @HostListener('document:click', ['$event.target'])
   @HostListener('window:keydown.escape')
   hidd(elt: any) {

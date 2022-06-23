@@ -1,0 +1,17 @@
+<div class="loginWindow colon">
+  <h3>Bonjour,</h3>
+  <p>Veuillez entrer votre nom</p>
+  <form #usernameForm="ngForm" (ngSubmit)="login(usernameForm)" class="colon">
+    <input type="text" id="pseudo" name="username" ngModel maxlength="24">
+    <button type="submit">Connexion</button>
+  </form>
+  <!-- <div *ngIf="token.name" class="reconnect">
+    <a (click)="reconnect()">
+      Se reconnecter en tant que 
+      <strong [style.color]="token.color">{{token.name}}</strong>
+      ?
+    </a>
+    <i class="fa-solid fa-trash-can" (click)="purgeToken()"></i>
+    <span (click)="switchAutocoParam()" [ngClass]="{'active': params.autoreco == true}">AUTO</span>
+  </div> -->
+</div>

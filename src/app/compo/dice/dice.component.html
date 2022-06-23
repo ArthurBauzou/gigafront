@@ -1,5 +1,6 @@
-<div class="diceContainer" #dicecontainer>
+<div class="diceContainer" #dicecontainer [style.border-color]="diceuser.color">
   <div *ngFor="let d of dicetype; index as i" class="dice" (click)="pickwin(i)">
+    <div class="diceLabel"></div>
     <p class="winner"></p>
     <p></p>
     <p></p>

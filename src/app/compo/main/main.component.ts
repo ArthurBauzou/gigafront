@@ -1,30 +1,30 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/message.model';
-import { SocketioService } from 'src/app/socketio.service';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { SocketioService } from 'src/app/services/socketio.service';
+import { UserService } from 'src/app/services/user.service';
+import { UtilService } from 'src/app/services/util.service';
 
 
 @Component({
-  selector: 'app-mainchat',
-  templateUrl: './mainchat.component.html',
-  styleUrls: ['./mainchat.component.css']
+  selector: 'app-main',
+  templateUrl: './main.component.html',
+  styleUrls: ['./main.component.css']
 })
-export class MainchatComponent {
+export class MainComponent {
   
-  colorlist = ['#D40000','#ff6600','#D4AA00','#558b2f','#00CCFF','#0066FF','#7137c8','#c837ab']
   user = {id: '', name: '', color: ''}
   messages: Message[] = []
   promptHistory: string[] = []
   promptHistoryPosition: number = 0
+  colorlist:string[] = []
 
-  // userlist = new Map<string, {name:string,color:string,sockets:string[]}>;
   userlist: {[id:string]: {name:string,color:string,sockets:string[]}} = {};
-  token:any = {}
-  params:any = {
-    autoreco: false,
-    rolldef: [6,6]
-  }
+  // token:any = {}
+  // params:any = {
+  //   autoreco: false,
+  //   rolldef: [6,6]
+  // }
   messageSub: Subscription;
   usersConnectedSub: Subscription;
   
@@ -33,8 +33,12 @@ export class MainchatComponent {
 
   constructor(
     private _socketService: SocketioService,
-    private _jwtHelper: JwtHelperService
+    private _utilService: UtilService,
+    private _userService: UserService
     ) { 
+    // ini des valeurs depuis services
+    this.colorlist = this._utilService.colorlist
+    // abonnements
     this.messageSub = this._socketService.watchMessages().subscribe((m:Message) => {
       this.messages.push(m)
       this.msgFusion(this.messages)
@@ -59,62 +63,41 @@ export class MainchatComponent {
   }
   ngAfterViewInit() {
     this.iniTextarea();
-    this.checkToken();
-    this.checkParams();
-    if (this.params.autoreco) { this.reconnect() }
+    // this.checkToken();
+    // this.checkParams();
+    // if (this.params.autoreco) { this.reconnect() }
   }
   
   // fonctions de gestion du stockage local
-  checkToken() {
-    let tkn: string | null = localStorage.getItem('userToken')
-    if (tkn) { this.token = this._jwtHelper.decodeToken(tkn) }
-  }
-  checkParams() {
-    let params = localStorage.getItem('userParams')
-    if (params) {
-      let jpar = JSON.parse(params)
-      for (let p in jpar) {this.params[p] = jpar[p]}
-    }
-  }
-  reconnect() {
-    this.user.name = this.token.name;
-    this.user.color = this.token.color;
-    this.user.id = this.token.id;
-    this._socketService.setupSocketConnection(this.user);
-  }
-  purgeToken() {
-    localStorage.removeItem('userToken')
-    this.token = {}
-    localStorage.setItem('userParams', '{"autoreco": false}')
-    this.params.autoreco = false
-  }
-  switchAutocoParam() {
-    if (!this.params.autoreco) {
-      this.params.autoreco = true
-      localStorage.setItem('userParams', JSON.stringify(this.params))
-    }
-    else {
-      this.params.autoreco = false
-      localStorage.setItem('userParams', JSON.stringify(this.params))
-    }
-  }
+  // checkToken() {
+  //   let tkn: string | null = localStorage.getItem('userToken')
+  //   if (tkn) { this.token = this._jwtHelper.decodeToken(tkn) }
+  // }
+  // checkParams() {
+  //   let params = localStorage.getItem('userParams')
+  //   if (params) {
+  //     let jpar = JSON.parse(params)
+  //     for (let p in jpar) {this.params[p] = jpar[p]}
+  //   }
+  // }
+  
 
   // fonctions d’interactions avec le socket
-  loguser(form:any) {
-    if (form.value.username != '') {
-      this.user.name = form.value.username
-      this.user.id = this.generateId()
-      this.user.color = this.colorlist[Math.floor(Math.random()*this.colorlist.length)]
-      this._socketService.setupSocketConnection(this.user);
-    }
-  }
+  // loguser(form:any) {
+  //   if (form.value.username != '') {
+  //     this.user.name = form.value.username
+  //     this.user.id = this.generateId()
+  //     this.user.color = this.colorlist[Math.floor(Math.random()*this.colorlist.length)]
+  //     this._socketService.setupSocketConnection(this.user);
+  //   }
+  // }
   logout() {
     this._socketService.disconnect();
     this.messages = []
     this.messageSub.unsubscribe()
     this.usersConnectedSub.unsubscribe()
     this.user = {id:'',name:'',color:''};
-    this.checkToken();
+    // this.checkToken();
   }
   sendMessage(form:any) {
     let body = form.value.message
@@ -136,15 +119,31 @@ export class MainchatComponent {
 
   parseCommand(command:string, message:Message) {
     let res = new Message('',this.user.id,'','','')
+    let body = message.parse().body
     switch(command) {
       // COMMANDE : CODE
       case 'code':
-        let codebod = message.parse().body
-        if (codebod != '') {
+        if (body != '') {
           res.auteur = message.auteur
           res.couleur = message.couleur
-          res.contenu = codebod
+          res.contenu = body
           res.style = 'code'
+        }
+        else {
+          res.contenu = 'Impossible d’envoyer cette commande vide'
+          res.style = 'erreur'
+        }
+        break;
+      // COMMANDE : CITATION
+      case 'quote':
+      case 'q':
+        if (body != '') {
+          let cit = this.parseQuote(body)
+          res.auteur = message.auteur
+          res.couleur = message.couleur
+          res.contenu = cit[0]
+          res.style = 'quote'
+          res.info = cit[1]
         }
         else {
           res.contenu = 'Impossible d’envoyer cette commande vide'
@@ -155,9 +154,8 @@ export class MainchatComponent {
       case 'roll':
       case 'r':
       case 'dé':
-        let dicetype = message.parse().body
-        if (dicetype != '') {
-          let arr = this.parseRoll(dicetype)
+        if (body != '') {
+          let arr = this.parseRoll(body)
           if (arr[0] == 0) {
             res.contenu = 'Impossible de jetter ce type de dés'
             res.style = 'erreur'
@@ -166,16 +164,16 @@ export class MainchatComponent {
             res.contenu = arr
           }
         } else {
-          res.contenu = this.params.rolldef
+          res.contenu = this._userService.params.rolldef
         }
         res.style = 'diceroll'
         res.auteur = message.auteur
         res.couleur = message.couleur
-        res.info = this.generateId(24)
+        res.info = this._utilService.generateId(24)
         break;
       // COMMANDE : DEFINIR LE JET DE DÉS PAR DÉFAUT
       case 'rolldef':
-        let newdef = this.parseRoll(message.parse().body)
+        let newdef = this.parseRoll(body)
         if (newdef[0] == 0) {
           res.style = 'erreur'
           res.contenu = 'Format de jet de dé invalide'
@@ -183,8 +181,7 @@ export class MainchatComponent {
         else {
           res.style = 'notif'
           res.contenu = 'Jet de dé par défaut changé'
-          this.params.rolldef = newdef
-          localStorage.setItem('userParams', JSON.stringify(this.params))
+          this._userService.updateParams({rolldef: newdef})
         }
         break;
       // COMMANDE NON RECONNUE
@@ -195,13 +192,13 @@ export class MainchatComponent {
     return res
   }
 
-  parseRoll(a:any) {
-    let res = a.split(/[dD]+/)                  // découpe sur les D et les d
-    if (res.length == 1) {res.unshift('1')}     // gestion du format 'd4'
+  parseRoll(body:any) {
+    let res = body.split(/[dD]+/)                   // découpe sur les D et les d
+    if (res.length == 1) {res.unshift('1')}         // gestion du format 'd4'
     if (res[0] == "") {res[0]='1'}
-    res = res.map((x:any) => parseInt(x,10))    
-    let dicevalid = true
-    for (let i=1; i<res.length; i++) {          // verif que les dés demandés sont autorisés
+    res = res.map((x:string) => parseInt(x,10))    
+    let dicevalid = true                            // verif que les dés demandés sont autorisés
+    for (let i=1; i<res.length; i++) {          
       if (![3,4,6,8,10,12,20,100].includes(res[i])) {dicevalid = false}
     }
     if ( !dicevalid ||
@@ -221,6 +218,14 @@ export class MainchatComponent {
       res.shift()      // suppression du 1 au début de la chaine
     }
     return res
+  }
+
+  parseQuote(body:string) {
+    let arr = body.split('--')
+    if (arr.length > 1) {
+      console.log(arr)
+    }
+    return arr
   }
 
 
@@ -251,17 +256,6 @@ export class MainchatComponent {
     this.promptHistory.push(prompt)
     let psize = this.promptHistory.length
     if (psize > 20) { this.promptHistory.shift() }
-  }
-  
-
-  // FONCTION DE CRÉATION D’IDENTIFIANT ALÉATOIRE
-  dec2hex (dec:number) {
-    return dec.toString(16).padStart(2, "0")
-  }
-  generateId (len?:number) {
-    var arr = new Uint8Array((len || 40) / 2)
-    window.crypto.getRandomValues(arr)
-    return Array.from(arr, this.dec2hex).join('')
   }
   
 }

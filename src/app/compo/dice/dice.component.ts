@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { SocketioService } from 'src/app/socketio.service';
+import { SocketioService } from 'src/app/services/socketio.service';
 
 interface Dice {
   sides: number;
@@ -16,7 +16,7 @@ interface Dice {
 })
 export class DiceComponent {
 
-  SPEED = 10
+  SPEED = 8
   WINSTYLE = '#929292'
   DIMS = {x:32,y:46}
 
@@ -44,7 +44,6 @@ export class DiceComponent {
 
   ngAfterViewInit() {
     let container = this.dcont.nativeElement
-    container.style.borderLeft = `5px ${this.diceuser.color} solid`
     let diceDivs = container.querySelectorAll('.dice')
 
     diceDivs.forEach((d:HTMLElement,i:number) => {
@@ -56,10 +55,12 @@ export class DiceComponent {
         stop: false
       }
       if (nbFace > 10) {d.style.width = "50px"}
+      d.querySelector('.diceLabel')!.innerHTML = `d${nbFace}`
 
       d.querySelectorAll('p:not(.winner)').forEach( (f,j) => {
         let el = f as HTMLElement
         el.innerHTML = this.faceroll(nbFace)
+        if (this.userid == this.diceuser.id) {el.classList.add('allowed')}
         el.style.bottom = `${j*this.DIMS.y}px`;
         let anim = setInterval(() => {
           this.roll(el,this.dices[i],anim)
@@ -73,15 +74,21 @@ export class DiceComponent {
   }
 
   faceroll(sides:number):string {
-    let res = Math.random()*sides
+    let res:number = Math.random()*sides
     if ([10,100].includes(sides)) {res = Math.floor(res)}
     else {res = Math.ceil(res)}
-    return res.toString()
+    
+    if (sides == 100 || sides == 20) {
+      let res2:string = res.toString().padStart(2,'0')
+      return res2
+    } else {
+      return res.toString()
+    }
   }
 
   roll(e:HTMLElement,d:Dice,a:any) {
     let pos = parseInt(e.style.bottom)
-    if (e.style.backgroundColor == this.WINSTYLE) {console.log("winner: ",e);clearInterval(a)}
+    if (e.style.backgroundColor == this.WINSTYLE) {clearInterval(a)}
     if (pos < -this.DIMS.y) {
       if (d.stop == false) {
         e.style.bottom = `${2*this.DIMS.y}px`;
@@ -115,9 +122,9 @@ export class DiceComponent {
       }
       this._socketService.sendDiceRes(diceresult)
     }
+    // stop déclenché à distance
     if (forceRes) {
       this.dices[i].stop = true;
-      // création du resultat au dessus du reste
       let winp = this.dices[i].element.querySelector('.winner')! as HTMLElement
       winp.innerHTML = forceRes.toString()
       this.dices[i].result = winp.innerHTML
@@ -126,9 +133,6 @@ export class DiceComponent {
       this.dices[i].element.append(winp)
       winp.style.bottom = `${3*this.DIMS.y}px`
       this.stop(winp)
-    }
-    if (this.dices[i].result != '') {
-      this.commentary.push(`d${this.dicetype[i]}=${this.dices[i].result}`)
     }
   }
 
@@ -145,7 +149,7 @@ export class DiceComponent {
       }
       // s’arrête définitivement quand il est presque à l’arrêt et centré
       if (Math.abs(speed) < 1 && pos < bounce && pos > -bounce ) {
-        e.style.bottom = '-3px'
+        e.style.bottom = '-7px'
         clearInterval(animstop)
         this.checkDone()
       }

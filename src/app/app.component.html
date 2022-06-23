@@ -4,5 +4,6 @@
 </nav>
 
 <div class="reste">
-  <app-mainchat></app-mainchat>
+  <app-home *ngIf="userid == ''"></app-home>
+  <app-main *ngIf="userid != ''"></app-main>
 </div>

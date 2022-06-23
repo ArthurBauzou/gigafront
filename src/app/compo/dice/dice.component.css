@@ -3,6 +3,7 @@
     padding: 8px;
     display: flex;
     flex-flow: row nowrap;
+    border-left: 5px white solid;
 }
 .diceContainer .dice {
     position: relative;
@@ -15,6 +16,13 @@
     height: 40px;
     width: 32px;
 }
+.diceContainer .diceLabel {
+    background: black;
+    color: white;
+    font-size: 9px;
+    z-index: 15;
+    text-align: center;
+}
 .diceContainer .dice p {
     position: absolute;
     padding: 9px 8px;
@@ -22,6 +30,10 @@
     font-weight: 600;
     margin: 0;
     bottom: 0px;
+    cursor: not-allowed;
+}
+.diceContainer .dice p.allowed {
+    cursor: pointer;
 }
 .diceContainer .diceComm {
     margin-left: auto;

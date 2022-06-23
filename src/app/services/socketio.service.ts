@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { io } from 'socket.io-client'
 import { environment } from 'src/environments/environment';
-import { Message } from './models/message.model';
+import { Message } from '../models/message.model';
 import { Subject } from 'rxjs'
 
 @Injectable({

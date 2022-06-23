@@ -37,9 +37,18 @@ div.reste {
     flex: 1 1 auto;
     display: flex;
     flex-flow: column nowrap;
+    background-image: url('../assets/images/texture-paper-01.jpg') ;
+}
+#mainChat {
+    justify-content: flex-end;
+    flex-grow: 1;
+    position: relative;
+}
+#mainChat.displaynone {
+    display: none;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 800px) {
     .gigabar img {
         display: none;
     }

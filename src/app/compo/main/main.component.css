@@ -5,10 +5,10 @@
     width: 40%;
     background: #424242
 }
-.gigacontain input {
+/* .gigacontain input {
     font-size: 32px;
     margin: 12px 0px;
-}
+} */
 .gigacontain button {
     width: 30%;
     margin-left: auto;
@@ -50,12 +50,7 @@
     margin-left: 8px;
     cursor: pointer;
 }
-#mainChat {
-    /* margin: 24px auto; */
-    justify-content: flex-end;
-    flex-grow: 1;
-    position: relative;
-}
+
 .messageDisplay {
     padding: 4px;
     flex-grow: 1;
@@ -83,7 +78,7 @@
 
 /* STYLES DES MESSAGES */
 .messageDisplay span.gigaCode {
-    display: block;
+    /* display: block; */
     padding: 8px;
     font-family:'Courier New', Courier, monospace;
     font-size: 13px;
@@ -100,6 +95,13 @@
     font-family:'Courier New', Courier, monospace;
     font-size: 13px;
     color: darkseagreen;
+}
+.messageDisplay span.gigaQuote {
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    color: black;
+    background: Wheat;
+    padding: 12px;
 }
 
 
@@ -124,10 +126,10 @@
 }
 .userlistDisplay div i {
     position: absolute;
-    left: -18px;
-    top: 7px;
+    right: 10px;
+    top: 4px;
     font-size: 12px;
-    color: rgb(74,74,74)
+    color: white;
 }
 .userlistDisplay button {
     margin-top: auto;
@@ -152,8 +154,6 @@
 .messageInput textarea {
     flex: 7;
     border: none;
-    /* border-top: 1px gray solid;
-    border-bottom: 1px gray solid; */
     resize: none;
     outline: none;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -192,18 +192,16 @@
     transform: scale(1.1);
 }
 
-#mainChat.displaynone {
-    display: none;
-}
+
 
 
 @media screen and (max-width: 1128px) {
     .gigacontain {
-        width: 60%;
+        width: 50%;
     }
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 800px) {
 
     .gigacontain {
         border: 1px gray none;
