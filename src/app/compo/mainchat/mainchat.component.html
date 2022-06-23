@@ -25,14 +25,23 @@
   <div class="gigacontain colon">
     <div class="messageDisplay">
       <div *ngFor="let m of messages" class="message">
-        <span [style.color]="m.couleur" class="messAut" *ngIf="m.auteur">{{m.auteur}} : </span>
+        <!-- auteur [style.color]="m.couleur" -->
+        <span  
+        [style.borderColor]="m.couleur" 
+        class="messAut" 
+        *ngIf="m.auteur">{{m.auteur}} : </span>
+        <!-- contenu -->
         <span *ngIf="m.style != 'diceroll'"
         [ngClass]="{
           'gigaCode' : m.style == 'code',
           'gigaNotif' : m.style == 'notif',
           'gigaErreur' : m.style == 'erreur'
         }" >{{m.contenu}}</span>
-        <app-dice *ngIf="m.style == 'diceroll'" [user]="{id:m.auteurID,color:m.couleur}" [dicetype]="m.contenu"></app-dice>
+        <app-dice *ngIf="m.style == 'diceroll'" 
+        [diceuser]="{id:m.auteurID,color:m.couleur}" 
+        [dicetype]="m.contenu" 
+        [userid]="user.id"
+        [diceID]="m.info"></app-dice>
       </div>
     </div>
     <form class="inline messageInput" #messageBox="ngForm" (ngSubmit)="sendMessage(messageBox)">

@@ -1,4 +1,4 @@
-import { Component, ElementRef, ReflectiveInjector, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/message.model';
 import { SocketioService } from 'src/app/socketio.service';
@@ -12,13 +12,14 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 })
 export class MainchatComponent {
   
-  colorlist = ['#D40000ff','#ff6600ff','#D4AA00ff','#558b2fff','#00CCFFFF','#0066FFff','#7137c8ff','#c837abff']
+  colorlist = ['#D40000','#ff6600','#D4AA00','#558b2f','#00CCFF','#0066FF','#7137c8','#c837ab']
   user = {id: '', name: '', color: ''}
   messages: Message[] = []
   promptHistory: string[] = []
   promptHistoryPosition: number = 0
 
-  userlist = new Map;
+  // userlist = new Map<string, {name:string,color:string,sockets:string[]}>;
+  userlist: {[id:string]: {name:string,color:string,sockets:string[]}} = {};
   token:any = {}
   params:any = {
     autoreco: false,
@@ -40,9 +41,13 @@ export class MainchatComponent {
     });
     this.usersConnectedSub = this._socketService.watchUsers().subscribe((list) => {
       this.userlist = list;
+      this.messages.forEach((m)=>{
+        m.couleur = this.userlist[m.auteurID].color
+      })
     })
    }
-  
+
+
   // INITIALISATIONS
   iniTextarea() {
     this.textarea.nativeElement.addEventListener('keydown', (e:any) => {
@@ -59,7 +64,7 @@ export class MainchatComponent {
     if (this.params.autoreco) { this.reconnect() }
   }
   
-  // fonctions de gbestion du stockage local
+  // fonctions de gestion du stockage local
   checkToken() {
     let tkn: string | null = localStorage.getItem('userToken')
     if (tkn) { this.token = this._jwtHelper.decodeToken(tkn) }
@@ -106,6 +111,8 @@ export class MainchatComponent {
   logout() {
     this._socketService.disconnect();
     this.messages = []
+    this.messageSub.unsubscribe()
+    this.usersConnectedSub.unsubscribe()
     this.user = {id:'',name:'',color:''};
     this.checkToken();
   }
@@ -116,10 +123,8 @@ export class MainchatComponent {
       let message = new Message(this.user.name, this.user.id, this.user.color, body)
       let command = message.parse().command
       if (command != '') { message = this.parseCommand(command, message) }
-      // if (message.style == 'erreur') { this.messages.push(message) }
       if (['erreur','notif'].includes(message.style)) { this.messages.push(message) }
       else { this._socketService.sendMessage(message) }
-      console.log('out : ', message)
       form.reset();
     }
   }
@@ -166,6 +171,7 @@ export class MainchatComponent {
         res.style = 'diceroll'
         res.auteur = message.auteur
         res.couleur = message.couleur
+        res.info = this.generateId(24)
         break;
       // COMMANDE : DEFINIR LE JET DE DÉS PAR DÉFAUT
       case 'rolldef':
@@ -223,7 +229,6 @@ export class MainchatComponent {
     el.style.height = "1px";
     el.style.height = (el.scrollHeight - 16)+"px";
     let h = el.style.height.split('px').map(x => parseInt(x))[0]
-    console.log(h)
     if (h > 128) {el.style.height = '128px'}
     if ((el as HTMLInputElement).value == '') {el.style.height = "18px"}
   }

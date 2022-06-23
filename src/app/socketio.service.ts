@@ -13,6 +13,7 @@ export class SocketioService {
 
   private message$ = new Subject<Message>()
   private users$ = new Subject<any>()
+  private diceRes$ = new Subject<any>()
 
   constructor() { }
 
@@ -22,6 +23,9 @@ export class SocketioService {
   }
   watchUsers() {
     return this.users$.asObservable()
+  }
+  watchDiceRes() {
+    return this.diceRes$.asObservable()
   }
 
   sendMessage(message:Message) {
@@ -33,11 +37,15 @@ export class SocketioService {
   userColorChange(user:any) {
     this.socket.emit('color0', user)
   }
+  sendDiceRes(res:any) {
+    this.socket.emit('dice0', res)
+  }
 
   setupSocketConnection(user:any) {
     this.socket = io('http://glub.fr:3000')
     this.socket.emit('join0', user)
     this.socket.on('msg0', (msg:any) => { this.message$.next(msg) })
+    this.socket.on('dice1', (res:any) => { this.diceRes$.next(res) })
     this.socket.on('user0', (userlist:any) => { this.users$.next(userlist) })
     this.socket.on('token0', (token:string) => { localStorage.setItem("userToken", token) })
   }

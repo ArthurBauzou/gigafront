@@ -3,6 +3,7 @@
     border-left: 1px black solid;
     padding: 4px;
     width: 40%;
+    background: #424242
 }
 .gigacontain input {
     font-size: 32px;
@@ -56,14 +57,28 @@
     position: relative;
 }
 .messageDisplay {
+    padding: 4px;
     flex-grow: 1;
     height: 400px;
     overflow-y: auto;
     scrollbar-width: thin;
 }
+.message {
+    padding: 4px;
+}
 .messageDisplay span {
     white-space: pre-wrap;
-    display: inline-flex;
+    display: block;
+    font-size: 13px;
+    color: white;
+}
+.messAut {
+    border: none;
+    border-left: 5px white solid;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    padding-left: 2px;
 }
 
 /* STYLES DES MESSAGES */
@@ -72,7 +87,9 @@
     padding: 8px;
     font-family:'Courier New', Courier, monospace;
     font-size: 13px;
-    background: beige;
+    background: #929292;
+    color: black;
+    border-left: 5px black solid;
 }
 .messageDisplay span.gigaErreur {
     font-family:'Courier New', Courier, monospace;
@@ -84,6 +101,7 @@
     font-size: 13px;
     color: darkseagreen;
 }
+
 
 
 .userlistDisplay {
@@ -125,13 +143,6 @@
     background: red;
 }
 
-.message {
-    font-size: 14px;
-    padding: 4px;
-}
-.messAut {
-    font-weight: 600;
-}
 
 /* MESSAGE INPUT */
 .messageInput {
@@ -141,8 +152,8 @@
 .messageInput textarea {
     flex: 7;
     border: none;
-    border-top: 1px gray solid;
-    border-bottom: 1px gray solid;
+    /* border-top: 1px gray solid;
+    border-bottom: 1px gray solid; */
     resize: none;
     outline: none;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -186,23 +197,18 @@
 }
 
 
-/* @media screen and (max-width: 1128px) {
+@media screen and (max-width: 1128px) {
     .gigacontain {
-        width: 70%;
+        width: 60%;
     }
-} */
+}
 
 @media screen and (max-width: 640px) {
 
     .gigacontain {
         border: 1px gray none;
-        border-radius: 12px;
+        width:100%;
         padding: 8px 8px;
-        margin: 12px auto;
-        width: 90%;
-        box-shadow: none;
     }
-    .userlistDisplay {
-        display: none;
-    }
+
 }

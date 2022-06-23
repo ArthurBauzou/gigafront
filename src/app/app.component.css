@@ -5,7 +5,7 @@ nav.gigabar {
     color: white;
     flex: 0 0 auto;
     transition: 1s;
-    background: rgb(57, 57, 57);
+    background: #626262;
 }
 nav.gigabar:hover {
     background: black;

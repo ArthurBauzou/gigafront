@@ -4,14 +4,16 @@ export class Message {
     public couleur: string;
     public contenu: any;
     public style: string;
+    public info: string;
     public date: Date;
 
-    constructor(auteur:string, auteurID: string, couleur:string, contenu:any, style = '', date: Date = new Date()) {
+    constructor(auteur:string, auteurID: string, couleur:string, contenu:any, style = '', info = '', date: Date = new Date()) {
         this.auteur = auteur;
         this.auteurID = auteurID
         this.couleur = couleur;
         this.contenu = contenu;
         this.style = style;
+        this.info = info;
         this.date = date;
     }
 

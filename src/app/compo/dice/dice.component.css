@@ -1,11 +1,12 @@
 .diceContainer {
-    background: #e9e9e9;
+    background: #626262;
     padding: 8px;
     display: flex;
     flex-flow: row nowrap;
 }
 .diceContainer .dice {
-    background-color: white;
+    position: relative;
+    background-color: #929292;
     border-radius: 12px;
     margin-right: 8px;
     overflow: hidden;
@@ -13,7 +14,6 @@
     flex-flow: column nowrap;
     height: 40px;
     width: 32px;
-    position: relative;
 }
 .diceContainer .dice p {
     position: absolute;
@@ -24,7 +24,17 @@
     bottom: 0px;
 }
 .diceContainer .diceComm {
-    margin-left: 32px;
+    margin-left: auto;
+    font-size: 12px;
+    display: flex;
+    flex-flow: column wrap;
+    height: 42px;
+    width: 128px;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+.diceContainer .diceComm span {
+    margin-right: 8px;
 }
 .winner {
     display: none;
