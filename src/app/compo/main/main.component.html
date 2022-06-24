@@ -1,35 +1,16 @@
 
-<!-- Fenêtre de co -->
-<!-- <div class="gigacontain colon" *ngIf="user.name === ''" style="margin: 48px auto;">
-  <h3>Bonjour,</h3>
-  <p>Veuillez entrer votre nom</p>
-  <form #usernameForm="ngForm" (ngSubmit)="loguser(usernameForm)" class="colon">
-    <input type="text" id="pseudo" name="username" ngModel maxlength="24">
-    <button type="submit">Connexion</button>
-  </form>
-  <div *ngIf="token.name" class="reconnect">
-    <a (click)="reconnect()">
-      Se reconnecter en tant que 
-      <strong [style.color]="token.color">{{token.name}}</strong>
-      ?
-    </a>
-    <i class="fa-solid fa-trash-can" (click)="purgeToken()"></i>
-    <span (click)="switchAutocoParam()" [ngClass]="{'active': params.autoreco == true}">AUTO</span>
-  </div>
-</div> -->
-
 <!-- fenetre de chat -->
-<div class="inline ">
+<div class="inline" id="main">
 
   <!-- CHAT -->
-  <div class="gigacontain colon">
-    <div class="messageDisplay">
+  <div class="gigachat colon">
+    <div class="messageDisplay" #messD>
       <div *ngFor="let m of messages" class="message">
         <!-- auteur [style.color]="m.couleur" -->
         <span  
         [style.borderColor]="m.couleur" 
         class="messAut" 
-        *ngIf="m.auteur">{{m.auteur}} : </span>
+        *ngIf="m.auteur">{{m.auteur}} :</span>
         <!-- contenu -->
         <span *ngIf="m.style != 'diceroll'"
         [ngClass]="{
@@ -37,9 +18,7 @@
           'gigaQuote' : m.style == 'quote',
           'gigaNotif' : m.style == 'notif',
           'gigaErreur' : m.style == 'erreur'
-        }">
-
-        {{m.contenu}}</span>
+        }">{{m.contenu}}</span>
         <app-dice *ngIf="m.style == 'diceroll'" 
         [diceuser]="{id:m.auteurID,color:m.couleur}" 
         [dicetype]="m.contenu" 
@@ -47,18 +26,22 @@
         [diceID]="m.info"></app-dice>
       </div>
     </div>
-    <form class="inline messageInput" #messageBox="ngForm" (ngSubmit)="sendMessage(messageBox)">
-      <div id="colorpicker" (click)="picker.classList.toggle('hidd')" class="hid-container" [style.background-color]="user.color">
-        <div class="hid-element hidd" #picker>
-          <div class="color" *ngFor="let c of colorlist" [style.background-color]="c" (click)="changeColor(c)"></div>
+    <!-- PROMPT -->
+    <!-- <form class="inline messageInput" #messageBox="ngForm" (ngSubmit)="sendMessage(messageBox)"> -->
+      <div class="inline messageInput">
+        <div id="colorpicker" (click)="picker.classList.toggle('hidd')" class="hid-container" [style.background-color]="user.color">
+          <div class="hid-element hidd" #picker>
+            <div class="color" *ngFor="let c of colorlist" [style.background-color]="c" (click)="changeColor(c)"></div>
+          </div>
         </div>
+        <textarea ngModel (ngModelChange)="adjustHeight(messageB)" #messageB>
+        </textarea>
+        <button (click)="sendMessage(messageB)">
+          <i class="fa-solid fa-paper-plane" style="font-size:24px; color:rgb(198, 198, 198);"></i>
+        </button>
       </div>
-      <textarea name="message" ngModel (keyup.enter)="sendMessage(messageBox)" (ngModelChange)="adjustHeight(messageB)" #messageB>
-      </textarea>
-      <button>
-        <i class="fa-solid fa-paper-plane" style="font-size:24px; color:rgb(198, 198, 198);"></i>
-      </button>
-    </form>
+    <!-- </form> -->
+    
   </div>
 
   <!-- LISTE DES UTILISATEURS CONNECTÉS -->

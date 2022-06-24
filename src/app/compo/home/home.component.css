@@ -1,6 +1,6 @@
 .loginWindow {
     background: #424242;
-    width: 40%;
+    width: 50%;
     padding: 32px 64px;
     color: white;
     margin: 64px auto;
@@ -19,6 +19,42 @@
     background: black;
     color: white;
     font-size: 14px;
+}
+
+.reconnect {
+    margin-top: 32px;
+
+    font-size: 13px;
+    color: white;
+}
+.reconnect strong {
+    border: none;
+    border-left: 5px white solid;
+    padding-left: 3px;
+}
+.reconnect a:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+.reconnect span {
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 600;
+    background: gray;
+    color: white;
+    border-radius: 20%/50%;
+    padding: 3px 6px;
+    transform: translateY(-2px);
+    margin-left: 10px;
+    cursor: pointer;
+    flex: 0;
+}
+.reconnect span.active {
+    background: black;
+}
+.reconnect i{
+    margin-left: auto;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 800px) {

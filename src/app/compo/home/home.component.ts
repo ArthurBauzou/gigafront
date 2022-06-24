@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SocketioService } from 'src/app/services/socketio.service';
 import { UserService } from 'src/app/services/user.service';
-import { UtilService } from 'src/app/services/util.service';
 
 @Component({
   selector: 'app-home',
@@ -10,23 +8,24 @@ import { UtilService } from 'src/app/services/util.service';
 })
 export class HomeComponent implements OnInit {
 
-  user = {id: '', name: '', color: ''}
-
+  prevUser = {id: '', name: '', color: ''}
   params:any = {}
 
   constructor(
-    private _utilService: UtilService,
-    private _socketService: SocketioService,
     private _userService: UserService
   ) { }
 
   ngOnInit(): void {
+    if (this._userService.checkToken()) {this.prevUser = this._userService.token}
+    this.params = this._userService.checkParams();
+    if (this.params.autoreco == 'oui') { this._userService.reconnect() }
+    else if (this.params.autoreco == 'hack') { 
+      this._userService.updateParams({autoreco: 'oui'})
+      this.params.autoreco = 'oui'
+    }
   }
 
   ngAfterViewInit() {
-    this._userService.checkToken();
-    this._userService.checkParams();
-    if (this._userService.params.autoreco) { this._userService.reconnect() }
   }
 
   login(form:any) {
@@ -35,15 +34,20 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  reconnect() {
+    this._userService.reconnect()
+  }
+
   switchAutocoParam() {
-    if (!this.params.autoreco) {
-      this.params.autoreco = true
-      localStorage.setItem('userParams', JSON.stringify(this.params))
-    }
-    else {
-      this.params.autoreco = false
-      localStorage.setItem('userParams', JSON.stringify(this.params))
-    }
+    if (this.params.autoreco == 'non') { this.params.autoreco = 'oui' }
+    else { this.params.autoreco = 'non' }
+    this._userService.updateParams(this.params)
+  }
+
+  destroyToken() {
+    this.prevUser = {id: '', name: '', color: ''}
+    this.params = this._userService.DEFAULTPARAMS
+    this._userService.purgeToken()
   }
 
 }

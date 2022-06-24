@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, QueryList, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/message.model';
 import { SocketioService } from 'src/app/services/socketio.service';
@@ -20,15 +20,12 @@ export class MainComponent {
   colorlist:string[] = []
 
   userlist: {[id:string]: {name:string,color:string,sockets:string[]}} = {};
-  // token:any = {}
-  // params:any = {
-  //   autoreco: false,
-  //   rolldef: [6,6]
-  // }
+
   messageSub: Subscription;
   usersConnectedSub: Subscription;
   
   @ViewChild('messageB') textarea!:ElementRef
+  @ViewChild('messD') messD!:ElementRef
   @ViewChild('picker') picker!:ElementRef
 
   constructor(
@@ -42,6 +39,7 @@ export class MainComponent {
     this.messageSub = this._socketService.watchMessages().subscribe((m:Message) => {
       this.messages.push(m)
       this.msgFusion(this.messages)
+      this.autoScroll(this.messD.nativeElement)
     });
     this.usersConnectedSub = this._socketService.watchUsers().subscribe((list) => {
       this.userlist = list;
@@ -54,69 +52,63 @@ export class MainComponent {
 
   // INITIALISATIONS
   iniTextarea() {
-    this.textarea.nativeElement.addEventListener('keydown', (e:any) => {
-      if(e.key == 'Enter' && !e.shiftKey) { e.preventDefault() }
-      if(e.key == 'ArrowUp') {
-        this.textarea.nativeElement.value = this.promptHistory[this.promptHistory.length-1]
+    let txtArea = this.textarea.nativeElement
+    txtArea.addEventListener('keydown', (e:any) => {
+      // envoyer le message avec entrée et non aller à la ligne
+      if(e.key == 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        this.sendMessage(txtArea as HTMLTextAreaElement)
+        txtArea.dispatchEvent(new Event('ngModelChange'))
+      }
+      // remonter dans l’historique
+      if(e.key == 'ArrowUp' && this.promptHistory.length != 0 && this.promptHistoryPosition < this.promptHistory.length) {
+        txtArea.value = this.promptHistory[this.promptHistoryPosition]
+        this.promptHistoryPosition += 1
+        txtArea.dispatchEvent(new Event('ngModelChange'))
+      }
+      // redescendre dans l’historique
+      if (e.key == 'ArrowDown' && this.promptHistoryPosition > 0) {
+        this.promptHistoryPosition -= 1
+        txtArea.value = this.promptHistory[this.promptHistoryPosition]
+        txtArea.dispatchEvent(new Event('ngModelChange'))
       }
     })
   }
   ngAfterViewInit() {
     this.iniTextarea();
-    // this.checkToken();
-    // this.checkParams();
-    // if (this.params.autoreco) { this.reconnect() }
+    this.user = this._userService.user
   }
   
-  // fonctions de gestion du stockage local
-  // checkToken() {
-  //   let tkn: string | null = localStorage.getItem('userToken')
-  //   if (tkn) { this.token = this._jwtHelper.decodeToken(tkn) }
-  // }
-  // checkParams() {
-  //   let params = localStorage.getItem('userParams')
-  //   if (params) {
-  //     let jpar = JSON.parse(params)
-  //     for (let p in jpar) {this.params[p] = jpar[p]}
-  //   }
-  // }
-  
-
-  // fonctions d’interactions avec le socket
-  // loguser(form:any) {
-  //   if (form.value.username != '') {
-  //     this.user.name = form.value.username
-  //     this.user.id = this.generateId()
-  //     this.user.color = this.colorlist[Math.floor(Math.random()*this.colorlist.length)]
-  //     this._socketService.setupSocketConnection(this.user);
-  //   }
-  // }
   logout() {
-    this._socketService.disconnect();
+    // reset valeurs locales
+    this.user = {id:'',name:'',color:''}
     this.messages = []
+    // nettoyage des abonnements
     this.messageSub.unsubscribe()
     this.usersConnectedSub.unsubscribe()
-    this.user = {id:'',name:'',color:''};
-    // this.checkToken();
+    // deconnexions dans les servcices
+    this._socketService.disconnect()
+    this._userService.disconnect()
   }
-  sendMessage(form:any) {
-    let body = form.value.message
-    if (body != '') {
-      this.writeHistory(body)
-      let message = new Message(this.user.name, this.user.id, this.user.color, body)
+
+
+  sendMessage(txtArea:HTMLTextAreaElement) {
+    let mess = txtArea.value
+    if (mess != '' ) {
+      this.writeHistory(mess)
+      let message = new Message(this.user.name, this.user.id, this.user.color, mess)
       let command = message.parse().command
       if (command != '') { message = this.parseCommand(command, message) }
       if (['erreur','notif'].includes(message.style)) { this.messages.push(message) }
       else { this._socketService.sendMessage(message) }
-      form.reset();
+      this.promptHistoryPosition = 0
+      txtArea.value = ''
     }
   }
   changeColor(col:string) {
     this.user.color = col;
     this._socketService.userColorChange(this.user)
   }
-
-
   parseCommand(command:string, message:Message) {
     let res = new Message('',this.user.id,'','','')
     let body = message.parse().body
@@ -253,9 +245,13 @@ export class MainComponent {
     }
   }
   writeHistory(prompt:string) {
-    this.promptHistory.push(prompt)
+    this.promptHistory.unshift(prompt)
     let psize = this.promptHistory.length
-    if (psize > 20) { this.promptHistory.shift() }
+    if (psize > 20) { this.promptHistory.pop() }
   }
-  
+  autoScroll(el:HTMLElement) {
+    el.scrollTop = el.scrollHeight
+  }
+
+
 }
