@@ -16,7 +16,7 @@ interface Dice {
 })
 export class DiceComponent {
 
-  SPEED = 8
+  SPEED = 12
   WINSTYLE = '#929292'
   DIMS = {x:32,y:46}
 
@@ -140,7 +140,8 @@ export class DiceComponent {
     let speed = this.SPEED
     let accel = 0
     let posprev = 80
-    let bounce = Math.ceil(Math.random()*10) + 5
+    let bounce = 5
+    let offset = -7
     let animstop = setInterval(()=>{
       let pos = parseInt(e.style.bottom)
       // commence à agir quand on est dans la fenêtre du dé
@@ -148,10 +149,9 @@ export class DiceComponent {
         accel = pos/bounce
       }
       // s’arrête définitivement quand il est presque à l’arrêt et centré
-      if (Math.abs(speed) < 1 && pos < bounce && pos > -bounce ) {
-        e.style.bottom = '-7px'
+      if (Math.abs(speed) < 1 && pos < offset+bounce && pos > offset-bounce ) {
+        e.style.bottom = `${offset}px`
         clearInterval(animstop)
-        this.checkDone()
       }
       // sinon ça subit l’influence de l’acceleration
       else {
@@ -159,8 +159,8 @@ export class DiceComponent {
         e.style.bottom = `${pos-(speed)}px`
       }
       // quand on passe le '0', la vitesse est limitée
-      if (posprev > 0 && parseInt(e.style.bottom) < 0 && speed > 5) { speed = 5 }
-      if (posprev < 0 && parseInt(e.style.bottom) > 0 && speed < -5) { speed = -5 }
+      if (posprev > offset && parseInt(e.style.bottom) < offset && speed > 5) { speed = 5 }
+      if (posprev < offset && parseInt(e.style.bottom) > offset && speed < -5) { speed = -5 }
       posprev = parseInt(e.style.bottom)
     },8)
   }

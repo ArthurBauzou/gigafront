@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt'
 
@@ -21,13 +22,16 @@ import { HomeComponent } from './compo/home/home.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    HighlightModule
   ],
   providers: [
     { provide: JWT_OPTIONS, 
       useValue: JWT_OPTIONS }, 
       JwtHelperService, 
-      SocketioService
+      SocketioService,
+      { provide: HIGHLIGHT_OPTIONS,
+        useValue: { fullLibraryLoader: () => import('highlight.js') }}
     ],
   bootstrap: [AppComponent]
 })

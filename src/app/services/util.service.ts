@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class UtilService {
 
   colorlist = ['#D40000','#ff6600','#D4AA00','#558b2f','#00CCFF','#0066FF','#7137c8','#c837ab']
+  notMessage = ['diceroll', 'code']
 
   constructor() { }
 

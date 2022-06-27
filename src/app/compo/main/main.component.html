@@ -4,7 +4,7 @@
 
   <!-- CHAT -->
   <div class="gigachat colon">
-    <div class="messageDisplay" #messD>
+    <div class="messageDisplay" #messD (scroll)="disableAutoScroll()">
       <div *ngFor="let m of messages" class="message">
         <!-- auteur [style.color]="m.couleur" -->
         <span  
@@ -12,13 +12,15 @@
         class="messAut" 
         *ngIf="m.auteur">{{m.auteur}} :</span>
         <!-- contenu -->
-        <span *ngIf="m.style != 'diceroll'"
+        <span *ngIf="!notMessage.includes(m.style)"
         [ngClass]="{
-          'gigaCode' : m.style == 'code',
           'gigaQuote' : m.style == 'quote',
           'gigaNotif' : m.style == 'notif',
           'gigaErreur' : m.style == 'erreur'
         }">{{m.contenu}}</span>
+        <pre *ngIf="m.style == 'code'">
+          <code [highlight]="m.contenu"></code>
+        </pre>
         <app-dice *ngIf="m.style == 'diceroll'" 
         [diceuser]="{id:m.auteurID,color:m.couleur}" 
         [dicetype]="m.contenu" 
@@ -26,21 +28,25 @@
         [diceID]="m.info"></app-dice>
       </div>
     </div>
-    <!-- PROMPT -->
-    <!-- <form class="inline messageInput" #messageBox="ngForm" (ngSubmit)="sendMessage(messageBox)"> -->
-      <div class="inline messageInput">
-        <div id="colorpicker" (click)="picker.classList.toggle('hidd')" class="hid-container" [style.background-color]="user.color">
-          <div class="hid-element hidd" #picker>
-            <div class="color" *ngFor="let c of colorlist" [style.background-color]="c" (click)="changeColor(c)"></div>
-          </div>
+    <div class="autoscroll" 
+    (click)="autoscroll = true ; autoScroll()" 
+    *ngIf="!autoscroll">
+      <i class="fa-solid fa-angles-down"></i>
+    </div>
+
+  <!-- PROMPT -->
+    <div class="inline messageInput">
+      <div id="colorpicker" (click)="picker.classList.toggle('hidd')" class="hid-container" [style.background-color]="user.color">
+        <div class="hid-element hidd" #picker>
+          <div class="color" *ngFor="let c of colorlist" [style.background-color]="c" (click)="changeColor(c)"></div>
         </div>
-        <textarea ngModel (ngModelChange)="adjustHeight(messageB)" #messageB>
-        </textarea>
-        <button (click)="sendMessage(messageB)">
-          <i class="fa-solid fa-paper-plane" style="font-size:24px; color:rgb(198, 198, 198);"></i>
-        </button>
       </div>
-    <!-- </form> -->
+      <textarea ngModel (ngModelChange)="adjustHeight(messageB)" #messageB>
+      </textarea>
+      <button (click)="sendMessage(messageB)">
+        <i class="fa-solid fa-paper-plane" style="font-size:24px; color:rgb(198, 198, 198);"></i>
+      </button>
+    </div>
     
   </div>
 

@@ -15,7 +15,7 @@
     border-left: 1px black solid;
     padding: 4px;
     width: 40%;
-    background: #424242
+    background: #424242;
 }
 .gigachat button {
     width: 30%;
@@ -31,7 +31,6 @@
 }
 
 
-
 .messageDisplay {
     padding: 4px;
     flex-grow: 1;
@@ -39,10 +38,29 @@
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
+    position: relative;
 }
 .message {
     padding: 4px;
+    display: grid;
 }
+
+.gigachat .autoscroll {
+    position: absolute;
+    bottom: 90px;
+    right: 12px;
+    background: rgba(255,255,255,0.3);
+    color: black;
+    font-size: 24px;
+    padding: 6px 12px;
+    transition: 0.1s
+}
+.gigachat .autoscroll:hover {
+    background: rgba(255,255,255,0.8);
+    color: black;
+}
+
+/* STYLES DES MESSAGES */
 .messageDisplay span {
     white-space: pre-wrap;
     display: block;
@@ -58,15 +76,14 @@
     color: white;
     padding-left: 2px;
 }
-
-/* STYLES DES MESSAGES */
-.messageDisplay span.gigaCode {
-    padding: 8px;
+.messageDisplay pre {
+    /* padding: 8px;
     font-family:'Courier New', Courier, monospace;
     font-size: 13px;
     background: #929292;
-    color: black;
-    border-left: 5px black solid;
+    color: black; */
+    margin: 0px;
+    overflow-x: auto;
 }
 .messageDisplay span.gigaErreur {
     font-family:'Courier New', Courier, monospace;
@@ -85,7 +102,6 @@
     background: Wheat;
     padding: 12px;
 }
-
 
 /* USERLIST */
 .userlistDisplay {
@@ -126,7 +142,6 @@
 .userlistDisplay button:hover {
     background: red;
 }
-
 
 /* MESSAGE INPUT */
 .messageInput {
@@ -175,8 +190,6 @@
 }
 
 
-
-
 @media screen and (max-width: 1128px) {
     .gigachat {
         width: 50%;
@@ -185,8 +198,7 @@
 
 @media screen and (max-width: 800px) {
     .gigachat {
-        border: 1px gray none;
-        width:100%;
-        padding: 8px 8px;
+        border: none;
+        width: 100%;
     }
 }

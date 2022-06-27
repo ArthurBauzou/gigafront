@@ -18,15 +18,17 @@ export class MainComponent {
   promptHistory: string[] = []
   promptHistoryPosition: number = 0
   colorlist:string[] = []
+  autoscroll: boolean = true;
+  notMessage: string[] = []
 
   userlist: {[id:string]: {name:string,color:string,sockets:string[]}} = {};
 
   messageSub: Subscription;
   usersConnectedSub: Subscription;
   
-  @ViewChild('messageB') textarea!:ElementRef
-  @ViewChild('messD') messD!:ElementRef
-  @ViewChild('picker') picker!:ElementRef
+  @ViewChild('messageB') textarea!:ElementRef   // boîte de saisie des messages
+  @ViewChild('messD') messD!:ElementRef         // conteneur des messages
+  @ViewChild('picker') picker!:ElementRef       // element caché pour choisir sa couleur
 
   constructor(
     private _socketService: SocketioService,
@@ -35,11 +37,12 @@ export class MainComponent {
     ) { 
     // ini des valeurs depuis services
     this.colorlist = this._utilService.colorlist
+    this.notMessage = this._utilService.notMessage
     // abonnements
     this.messageSub = this._socketService.watchMessages().subscribe((m:Message) => {
       this.messages.push(m)
       this.msgFusion(this.messages)
-      this.autoScroll(this.messD.nativeElement)
+
     });
     this.usersConnectedSub = this._socketService.watchUsers().subscribe((list) => {
       this.userlist = list;
@@ -48,7 +51,6 @@ export class MainComponent {
       })
     })
    }
-
 
   // INITIALISATIONS
   iniTextarea() {
@@ -78,7 +80,10 @@ export class MainComponent {
     this.iniTextarea();
     this.user = this._userService.user
   }
-  
+  ngAfterViewChecked() {
+    this.autoScroll();
+  }
+
   logout() {
     // reset valeurs locales
     this.user = {id:'',name:'',color:''}
@@ -90,7 +95,6 @@ export class MainComponent {
     this._socketService.disconnect()
     this._userService.disconnect()
   }
-
 
   sendMessage(txtArea:HTMLTextAreaElement) {
     let mess = txtArea.value
@@ -104,6 +108,11 @@ export class MainComponent {
       this.promptHistoryPosition = 0
       txtArea.value = ''
     }
+  }
+  writeHistory(prompt:string) {
+    this.promptHistory.unshift(prompt)
+    let psize = this.promptHistory.length
+    if (psize > 20) { this.promptHistory.pop() }
   }
   changeColor(col:string) {
     this.user.color = col;
@@ -221,13 +230,30 @@ export class MainComponent {
   }
 
 
-  // FONCTIONS UTILITAIRES
+  // Ajustement de confort du chat (hauteurs, scroll)
   adjustHeight(el:HTMLElement){
-    el.style.height = "1px";
-    el.style.height = (el.scrollHeight - 16)+"px";
-    let h = el.style.height.split('px').map(x => parseInt(x))[0]
-    if (h > 128) {el.style.height = '128px'}
+    if (el.scrollHeight > 50) {
+      el.style.height = "1px";
+      el.style.height = (el.scrollHeight - 24)+"px";
+      let h = el.style.height.split('px').map(x => parseInt(x))[0]
+      if (h > 128) {el.style.height = '128px'}
+    }
     if ((el as HTMLInputElement).value == '') {el.style.height = "18px"}
+  }
+  autoScroll() {
+    if (this.autoscroll) {
+      this.messD.nativeElement.scrollTop = this.messD.nativeElement.scrollHeight
+    }
+  }
+  disableAutoScroll() {
+    let scroll = this.messD.nativeElement.scrollTop
+    let height = this.messD.nativeElement.scrollHeight
+    let cheight = this.messD.nativeElement.clientHeight
+    if (scroll + cheight < height) {
+      this.autoscroll = false
+    } else {
+      this.autoscroll = true
+    }
   }
   msgFusion(arr:Message[]) {
     let size = arr.length - 1
@@ -243,14 +269,6 @@ export class MainComponent {
         arr.pop()
       }
     }
-  }
-  writeHistory(prompt:string) {
-    this.promptHistory.unshift(prompt)
-    let psize = this.promptHistory.length
-    if (psize > 20) { this.promptHistory.pop() }
-  }
-  autoScroll(el:HTMLElement) {
-    el.scrollTop = el.scrollHeight
   }
 
 
