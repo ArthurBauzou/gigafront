@@ -41,24 +41,11 @@ nav.gigabar {
     font-size: 64px;
     margin-top: 32px;
 }
-/* .gigabar button {
-    margin-left: auto;
-    border: none;
-    background: rgb(57, 57, 57);
-    font-size: 32px;
-    padding: 0px 16px;
-    color: gray;
-    width: 96px;
-}
-.gigabar button:hover {
-    background: rgb(117, 117, 117);
-    color: white;
-} */
 
 div.reste {
     flex: 1 1 auto;
     display: flex;
-    flex-flow: column nowrap;
+    flex-flow: row nowrap;
     background-image: url('../assets/images/texture-paper-01.jpg') ;
 }
 

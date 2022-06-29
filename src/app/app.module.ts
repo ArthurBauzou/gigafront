@@ -14,13 +14,15 @@ import { MainComponent } from './compo/main/main.component';
 import { SocketioService } from './services/socketio.service';
 import { DiceComponent } from './compo/dice/dice.component';
 import { HomeComponent } from './compo/home/home.component';
+import { CarnetComponent } from './compo/carnet/carnet.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
     DiceComponent,
-    HomeComponent
+    HomeComponent,
+    CarnetComponent
   ],
   imports: [
     BrowserModule,

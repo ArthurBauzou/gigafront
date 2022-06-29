@@ -81,6 +81,7 @@ export class MainComponent {
     this.user = this._userService.user
   }
   ngAfterViewChecked() {
+    // console.log('afterViewChecked')
     this.autoScroll();
   }
 
