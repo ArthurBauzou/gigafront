@@ -1,5 +1,9 @@
 <nav class="gigabar">
-  <img src="../assets/images/gigalogo.jpg" alt="">
+  <!-- <img src="../assets/images/gigalogo.jpg" alt=""> -->
+  <div class="logo" (click)="getRandomLogo()">
+    <img src={{logo.main}} alt="" class="mainlogo">
+    <img src={{logo.fr}} alt="" class="pointfr">
+  </div>
   <h1>Gigachat</h1>
 </nav>
 

@@ -4,15 +4,37 @@ nav.gigabar {
     height: 45px;
     color: white;
     flex: 0 0 auto;
-    transition: 1s;
     background: #626262;
 }
-nav.gigabar:hover {
-    background: black;
-    height: 96px;
-}
-.gigabar img {
+.logo{
     height: 100%;
+    padding: 4px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: end;
+}
+.logo img.mainlogo {
+    height: 90%;
+    filter: invert(96%) sepia(1%) saturate(196%) hue-rotate(36deg) brightness(93%) contrast(94%);
+}
+.logo img.pointfr {
+    position: relative;
+    left: -50px;
+    bottom: 5px;
+    opacity: 0;
+    height: 50%;
+    filter: invert(98%) sepia(0%) saturate(7392%) hue-rotate(306deg) brightness(121%) contrast(60%);
+    transition: 0.1s;
+}
+.logo:hover img.mainlogo {
+    position: relative;
+    left: 4px;
+    filter: invert(100%) sepia(1%) saturate(7500%) hue-rotate(344deg) brightness(116%) contrast(110%);
+}
+.logo:hover img.pointfr {
+    height: 55%;
+    opacity: 0.5;
+    left: 5px;
 }
 .gigabar h1 {
     margin-left: 32px;

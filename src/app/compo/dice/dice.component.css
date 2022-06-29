@@ -22,6 +22,7 @@
     font-size: 9px;
     z-index: 15;
     text-align: center;
+    cursor: not-allowed;
 }
 .diceContainer .dice p {
     position: absolute;
@@ -32,7 +33,7 @@
     bottom: 0px;
     cursor: not-allowed;
 }
-.diceContainer .dice p.allowed {
+.diceContainer .dice .allowed {
     cursor: pointer;
 }
 .diceContainer .diceComm {
@@ -50,4 +51,12 @@
 }
 .winner {
     display: none;
+}
+.slide {
+    animation: slidown 0.3s linear 0s infinite forwards running;
+}
+
+@keyframes slidown {
+  from { bottom: 20px; }
+  to { bottom: -128px; }
 }

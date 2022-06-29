@@ -14,13 +14,17 @@
         <!-- contenu -->
         <span *ngIf="!notMessage.includes(m.style)"
         [ngClass]="{
-          'gigaQuote' : m.style == 'quote',
           'gigaNotif' : m.style == 'notif',
           'gigaErreur' : m.style == 'erreur'
-        }">{{m.contenu}}</span>
-        <pre *ngIf="m.style == 'code'">
-          <code [highlight]="m.contenu"></code>
-        </pre>
+        }">{{m.contenu}}
+        </span>
+        <div *ngIf="m.style == 'quote'" class="quote">
+          <span class="gigaQuote quoteMaj">{{m.contenu | uppercase | slice:0:1}}</span>
+          <span class="gigaQuote">{{m.contenu | slice:1}}</span>
+          <span *ngIf="m.info" class="quotee">− {{m.info}}</span>
+          <i class="fa-solid fa-quote-right" [style.color]="m.couleur"></i>
+        </div>
+        <pre *ngIf="m.style == 'code'" [highlight]="m.contenu"></pre>
         <app-dice *ngIf="m.style == 'diceroll'" 
         [diceuser]="{id:m.auteurID,color:m.couleur}" 
         [dicetype]="m.contenu" 

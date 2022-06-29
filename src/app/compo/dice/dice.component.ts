@@ -16,7 +16,7 @@ interface Dice {
 })
 export class DiceComponent {
 
-  SPEED = 12
+  SPEED = 16
   WINSTYLE = '#929292'
   DIMS = {x:32,y:46}
 
@@ -60,11 +60,13 @@ export class DiceComponent {
       d.querySelectorAll('p:not(.winner)').forEach( (f,j) => {
         let el = f as HTMLElement
         el.innerHTML = this.faceroll(nbFace)
-        if (this.userid == this.diceuser.id) {el.classList.add('allowed')}
+        if (this.userid == this.diceuser.id) {
+          el.parentElement!.classList.add('allowed')
+          el.classList.add('allowed')
+          el.classList.add('slide')
+        }
         el.style.bottom = `${j*this.DIMS.y}px`;
-        let anim = setInterval(() => {
-          this.roll(el,this.dices[i],anim)
-        }, 8)
+        el.style.animationDelay = `${j*0.1}s`
       })
     })
 
@@ -86,24 +88,12 @@ export class DiceComponent {
     }
   }
 
-  roll(e:HTMLElement,d:Dice,a:any) {
-    let pos = parseInt(e.style.bottom)
-    if (e.style.backgroundColor == this.WINSTYLE) {clearInterval(a)}
-    if (pos < -this.DIMS.y) {
-      if (d.stop == false) {
-        e.style.bottom = `${2*this.DIMS.y}px`;
-        e.innerHTML = this.faceroll(d.sides)
-      }
-      else {clearInterval(a)}
-    } 
-    else {
-      e.style.bottom = `${pos-this.SPEED}px`
-    }
-  }
-
   pickwin(i:number,forceRes?:number) {
     if (this.diceuser.id == this.userid && this.dices[i].stop == false) {
       this.dices[i].stop = true;
+      // stopper les divs
+      let otherp = this.dices[i].element.querySelectorAll('.slide')!
+      otherp.forEach((e)=>{ e.remove() })
       // création du resultat au dessus du reste
       let winp = this.dices[i].element.querySelector('.winner')! as HTMLElement
       winp.innerHTML = this.faceroll(this.dices[i].sides)
@@ -111,7 +101,7 @@ export class DiceComponent {
       winp.style.backgroundColor = this.WINSTYLE
       winp.classList.remove('winner')
       this.dices[i].element.append(winp)
-      winp.style.bottom = `${3*this.DIMS.y}px`
+      winp.style.bottom = `${2*this.DIMS.y}px`
       this.stop(winp)
       // envoi du resultat
       let diceresult = {
@@ -140,13 +130,13 @@ export class DiceComponent {
     let speed = this.SPEED
     let accel = 0
     let posprev = 80
-    let bounce = 5
+    let bounce = 2
     let offset = -7
     let animstop = setInterval(()=>{
       let pos = parseInt(e.style.bottom)
       // commence à agir quand on est dans la fenêtre du dé
-      if (pos < this.DIMS.y ) {
-        accel = pos/bounce
+      if (pos < this.DIMS.y/2 + offset ) {
+        accel = (pos-offset)/bounce
       }
       // s’arrête définitivement quand il est presque à l’arrêt et centré
       if (Math.abs(speed) < 1 && pos < offset+bounce && pos > offset-bounce ) {
@@ -155,14 +145,20 @@ export class DiceComponent {
       }
       // sinon ça subit l’influence de l’acceleration
       else {
-        speed += accel
+        speed += accel 
         e.style.bottom = `${pos-(speed)}px`
       }
       // quand on passe le '0', la vitesse est limitée
-      if (posprev > offset && parseInt(e.style.bottom) < offset && speed > 5) { speed = 5 }
-      if (posprev < offset && parseInt(e.style.bottom) > offset && speed < -5) { speed = -5 }
+      if (posprev > offset && parseInt(e.style.bottom) < offset) {
+        if (speed > 8) {speed = 8 }
+        else {speed -= 2} 
+      }
+      if (posprev < offset && parseInt(e.style.bottom) > offset) {
+        if (speed < -8) { speed = -8 }
+        else {speed += 2}
+      }
       posprev = parseInt(e.style.bottom)
-    },8)
+    },16)
   }
 
   checkDone() {

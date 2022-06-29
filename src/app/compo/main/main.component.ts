@@ -140,11 +140,18 @@ export class MainComponent {
       case 'q':
         if (body != '') {
           let cit = this.parseQuote(body)
-          res.auteur = message.auteur
-          res.couleur = message.couleur
-          res.contenu = cit[0]
-          res.style = 'quote'
-          res.info = cit[1]
+          if (cit != ['0']) {
+            res.auteur = message.auteur
+            res.couleur = message.couleur
+            res.contenu = cit[0]
+            res.style = 'quote'
+            res.info = cit[1]
+            console.log(res)
+          } else {
+            res.contenu = 'Mauvais fromattage'
+            res.style = 'erreur'
+            return res
+          }
         }
         else {
           res.contenu = 'Impossible d’envoyer cette commande vide'
@@ -223,8 +230,9 @@ export class MainComponent {
 
   parseQuote(body:string) {
     let arr = body.split('--')
-    if (arr.length > 1) {
+    if (arr.length > 2) {
       console.log(arr)
+      arr = ['0']
     }
     return arr
   }
