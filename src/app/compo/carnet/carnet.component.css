@@ -4,14 +4,17 @@
     display: flex;
 }
 
-#toprow {
+canvas {
+    border: 0.5px solid #cccccc; 
+    border-radius: 18px;
+}
 
+#toprow {
     height: 4%;
     justify-content: center;
 }
 #mainrow {
     height: 92%;
-
     justify-content: center;
 }
 #botrow {
@@ -28,14 +31,16 @@
     border-radius: 24px;
     flex-grow: 1;
     display: flex;
-    justify-content: center;
-    justify-items: center;
+    padding-top: 11px;
+    padding-left: 11px;
 }
 .navtop {
     margin: 12px;
     margin-top: 0px;
-    background: beige;
-    opacity: 0.2;
+    /* background: beige; */
+    border: 1px beige dashed;
+    border-top: none;
+    opacity: 0.4;
     border-bottom-right-radius: 24px;
     border-bottom-left-radius: 24px;
     flex-grow: 1;
@@ -43,24 +48,30 @@
 .navbot {
     margin: 12px;
     margin-bottom: 0px;
-    background: beige;
-    opacity: 0.2;
+    /* background: beige; */
+    border: 1px beige dashed;
+    border-bottom: none;
+    opacity: 0.4;
     border-top-right-radius: 24px;
     border-top-left-radius: 24px;
     flex-grow: 1;
 }
 .navleft {
     margin-right: 12px;
-    background: beige;
-    opacity: 0.2;
+    /* background: beige; */
+    border: 1px beige dashed;
+    border-left: none;
+    opacity: 0.4;
     border-bottom-right-radius: 24px;
     border-top-right-radius: 24px;
     width: 4%;
 }
 .navright {
     margin-left: 12px;
-    background: beige;
-    opacity: 0.2;
+    /* background: beige; */
+    border: 1px beige dashed;
+    border-right: none;
+    opacity: 0.4;
     border-bottom-left-radius: 24px;
     border-top-left-radius: 24px;
     width: 4%;
@@ -69,13 +80,33 @@
     width: 4%;
     height: 4%;
 }
-.outils {
+.barrebot {
     height: 128px;
-    background: darkslategray;
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 2px black solid;
+    padding-left: 6%;
+    padding-top: 8px;
+    padding-bottom: 10px;
+    color: white;
+    font-size: 22px;
+}
+.outils div {
+    padding: 4px;
+}
+.outils div.active {
+    background:rgba(255, 255, 255, 0.25)
+}
+.outils div:hover {
+    background:rgba(255, 255, 255, 0.35)
+}
+.options {
+    width: 325px;
+    border: 4px rgba(255, 255, 255, 0.25) solid;
+    padding: 8px;
 }
 
 @media screen and (max-width: 800px) {
     :host {
-        /* display: none; */
+        display: none;
     }
 }

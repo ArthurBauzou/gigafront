@@ -63,8 +63,8 @@ export class DiceComponent {
         if (this.userid == this.diceuser.id) {
           el.parentElement!.classList.add('allowed')
           el.classList.add('allowed')
-          el.classList.add('slide')
         }
+        el.classList.add('slide')
         el.style.bottom = `${j*this.DIMS.y}px`;
         el.style.animationDelay = `${j*0.1}s`
       })

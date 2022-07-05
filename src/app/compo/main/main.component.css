@@ -231,6 +231,6 @@ div.quote i {
 @media screen and (max-width: 800px) {
     .gigachat {
         border: none;
-        width: 0%;
+        width: 100%;
     }
 }

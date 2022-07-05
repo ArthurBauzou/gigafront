@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { fabric } from 'fabric';
 import { Path } from 'fabric/fabric-impl';
 import { Subscription } from 'rxjs';
@@ -12,15 +12,19 @@ import { SocketioService } from 'src/app/services/socketio.service';
 })
 export class CarnetComponent implements OnInit {
 
+
   canvas = this._fabricService.canvas 
 
+  @ViewChild('page') page!:ElementRef
+
+  // Abonnemanets
   drawSub?: Subscription
 
-  mouseUp = (evt: fabric.IEvent) => {
+  // Callbacks des 'on'
+  mouseUp = (event: fabric.IEvent) => {
   };
-
-  sendPath = (opt:any) => {
-    this._socketioService.sendPath(opt.path)
+  sendPath = (obj:any) => {
+    this._socketioService.sendPath(obj.path)
   };
 
   constructor(
@@ -39,12 +43,35 @@ export class CarnetComponent implements OnInit {
   ngOnInit(): void {
 
     this.canvas = this._fabricService.initCanvas('canvas1')
+    this.canvas.backgroundColor = 'rgba(0,0,0,0)';
+
     this.canvas.freeDrawingBrush.color = 'black';
-    this.canvas.freeDrawingBrush.width = 4;
+    this.canvas.freeDrawingBrush.width = 2;
     this.canvas.isDrawingMode = true
 
     this.canvas.on('mouse:up', this.mouseUp);
     this.canvas.on('path:created', this.sendPath);
+  }
+
+  ngAfterViewInit() {
+    this.canvasResize()
+  }
+  
+  canvasResize() {
+    this.canvas.setHeight(this.page.nativeElement.clientHeight - 24)
+    this.canvas.setWidth(this.page.nativeElement.clientWidth - 24)
+  }
+
+  changeTool(event:any) {
+    let outils = event.currentTarget
+    outils.querySelector('.active')?.classList.remove('active')
+    if (!event.target.parentElement.classList.contains('outils')) {
+      event.target.parentElement.classList.add('active')
+    }
+    else {
+      console.log('clicdemerde')
+      event.target.classList.add('active')
+    }
   }
 
 }

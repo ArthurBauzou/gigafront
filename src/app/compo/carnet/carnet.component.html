@@ -7,8 +7,8 @@
     </div>
     <div id="mainrow" class="inline">
         <div class="navleft"></div>
-        <div class="main">
-            <canvas width="600" height="600" style="border: 1px solid #cccccc;" id="canvas1"></canvas>
+        <div class="main" #page>
+            <canvas width="100" height="100" id="canvas1" (window:resize)="canvasResize()"></canvas>
         </div>
         <div class="navright"></div>
     </div>
@@ -19,6 +19,21 @@
     </div>
 
 </div>
-<div class="outils">
-
+<div class="barrebot inline">
+    <div class="outils" (click)="changeTool($event)">
+        <div class="active" #brush>
+            <i class="fa-solid fa-paintbrush"></i>
+        </div>
+        <div #eraser>
+            <i class="fa-solid fa-eraser"></i>
+        </div>
+        <div #save>
+            <i class="fa-solid fa-floppy-disk"></i>
+        </div>
+    </div>
+    <div class="options">
+        <div class="brushoptions" *ngIf="brush.classList.contains('active')">
+            brushoptions
+        </div>
+    </div>
 </div>
