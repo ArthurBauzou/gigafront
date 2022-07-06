@@ -27,7 +27,7 @@ canvas {
     flex-grow: 1;
 }
 .main {
-    background: beige;
+    background: white;
     border-radius: 24px;
     flex-grow: 1;
     display: flex;
@@ -37,7 +37,6 @@ canvas {
 .navtop {
     margin: 12px;
     margin-top: 0px;
-    /* background: beige; */
     border: 1px beige dashed;
     border-top: none;
     opacity: 0.4;
@@ -48,7 +47,6 @@ canvas {
 .navbot {
     margin: 12px;
     margin-bottom: 0px;
-    /* background: beige; */
     border: 1px beige dashed;
     border-bottom: none;
     opacity: 0.4;
@@ -58,7 +56,6 @@ canvas {
 }
 .navleft {
     margin-right: 12px;
-    /* background: beige; */
     border: 1px beige dashed;
     border-left: none;
     opacity: 0.4;
@@ -68,7 +65,6 @@ canvas {
 }
 .navright {
     margin-left: 12px;
-    /* background: beige; */
     border: 1px beige dashed;
     border-right: none;
     opacity: 0.4;
@@ -87,10 +83,12 @@ canvas {
     padding-left: 6%;
     padding-top: 8px;
     padding-bottom: 10px;
-    color: white;
-    font-size: 22px;
 }
 .outils div {
+    color: white;
+    font-size: 24px;
+    width: 32px;
+    text-align: center;
     padding: 4px;
 }
 .outils div.active {
@@ -103,7 +101,44 @@ canvas {
     width: 325px;
     border: 4px rgba(255, 255, 255, 0.25) solid;
     padding: 8px;
+    font-size: 12px;
+    color: white;
 }
+.options>div {
+    height: 100%;
+    width: 100%;
+}
+
+.colorOpt {
+    display: flex;
+    flex-flow: row wrap;
+    height: 100%;
+}
+.colordiv {
+    flex: 1 1 12%;
+    font-size: 10px;
+    text-align: right;
+    position: relative;
+}
+.colordiv i {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+}
+.colordiv:hover {
+    z-index: 10;
+    transform: scale(1.1);
+}
+
+.optLine {
+    padding: 0 12px;
+}
+.optLine :is(label,span,input) {
+    padding-bottom: 10px;
+    flex-grow: 1;
+    align-self: flex-end;
+}
+
 
 @media screen and (max-width: 800px) {
     :host {

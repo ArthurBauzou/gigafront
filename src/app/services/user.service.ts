@@ -65,7 +65,7 @@ export class UserService {
   loguser(username:string) {
     this.user.name = username
     this.user.id = this._utilService.generateId()
-    this.user.color = this._utilService.randomColor()
+    this.user.color = this._utilService.randomColor(this._utilService.colorlist)
     this.user$.next(this.user)
     this._socketService.setupSocketConnection(this.user);  
   }

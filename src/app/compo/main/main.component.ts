@@ -1,4 +1,4 @@
-import { Component, ElementRef, QueryList, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Message } from 'src/app/models/message.model';
 import { SocketioService } from 'src/app/services/socketio.service';
