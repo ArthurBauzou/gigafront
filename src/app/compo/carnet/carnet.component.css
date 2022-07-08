@@ -77,15 +77,52 @@ canvas {
     width: 4%;
     height: 4%;
 }
-.barrebot {
-    height: 128px;
-    background: rgba(0, 0, 0, 0.6);
-    border-top: 2px black solid;
-    padding-left: 6%;
-    padding-top: 8px;
-    padding-bottom: 10px;
+
+.docbar {
+    /* background: rgba(255, 255, 255, 0.6); */
+    /* border-top: 2px solid rgba(255, 255, 255, 0.6); */
+    height: 42px;
+    border: none;
 }
-.outils div {
+.documents {
+    flex-grow: 1;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    flex-flow: row wrap;
+    padding-left: 24px;
+}
+.documents .doc {
+    height: 32px;
+    width: 32px;
+    background-color: coral;
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+.saveload {
+    margin-left: auto;
+    padding: 4px 24px;
+    padding-left: 8px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: gray;
+    font-size: 28px;
+    justify-items: space-around;
+}
+.saveload > div {
+    margin-left: 12px;
+}
+.saveload > div:hover {
+    color: white;
+}
+
+.barrebot {
+    /* height: 96px; */
+    background: rgba(0, 0, 0, 0.5);
+    /* border-top: 2px black solid; */
+    padding: 12px 64px;
+    position: relative;
+}
+/* .outils div {
     color: white;
     font-size: 24px;
     width: 32px;
@@ -108,12 +145,12 @@ canvas {
 .options>div {
     height: 100%;
     width: 100%;
-}
+} */
 
 .colorOpt {
     display: flex;
     flex-flow: row wrap;
-    height: 100%;
+    width: 50%;
 }
 .colordiv {
     flex: 1 1 12%;
@@ -130,7 +167,7 @@ canvas {
     z-index: 10;
     transform: scale(1.1);
 }
-
+/* 
 .optLine {
     padding: 0 12px;
 }
@@ -138,16 +175,23 @@ canvas {
     padding-bottom: 10px;
     flex-grow: 1;
     align-self: flex-end;
-}
+} */
 
 .toolbelt {
-    height:50%;
-    font-size:28px;
+    font-size:24px;
     color: gray;
 }
 .toolbelt>div{
     margin-right: 16px;
+    border-left: 3px solid transparent;
 }
+.toolbelt>div:hover{
+    border-left: 3px solid gray;
+}
+.toolbelt>div i{
+    padding-left: 4px;
+}
+
 .toolbelt .active {
     color: white;
 }
@@ -155,13 +199,11 @@ canvas {
 .sizeInfo {
     padding-top: 4px;
     height: 24px;
-    width: 48px;
+    width: 52px;
     position: absolute;
-    right: 16px;
-    top: 16px;
-    background:rgba(0, 0, 0, 0.6);
-    color: white;
-    border-radius: 8px;
+    left: 16px;
+    top: 14px;
+    color: gray;
     justify-content: space-evenly;
 }
 .sizeInfo > div {
@@ -175,5 +217,11 @@ canvas {
 @media screen and (max-width: 800px) {
     :host {
         display: none;
+    }
+}
+
+@media screen and (max-width: 1128px) {
+    .colorOpt {
+        width: 100%;
     }
 }

@@ -5,6 +5,7 @@ nav.gigabar {
     color: white;
     flex: 0 0 auto;
     background: #626262;
+    z-index:2;
 }
 .logo{
     height: 100%;
@@ -36,27 +37,12 @@ nav.gigabar {
     opacity: 0.5;
     left: 5px;
 }
-.gigabar h1 {
-    margin-left: 32px;
-    font-size: 64px;
-    margin-top: 32px;
-}
 
 div.reste {
     flex: 1 1 auto;
     display: flex;
     flex-flow: row nowrap;
-    background-image: url('../assets/images/texture-paper-01.jpg') ;
-}
-
-
-@media screen and (max-width: 800px) {
-    .gigabar img {
-        display: none;
-    }
-    .gigabar h1 {
-        margin-left: 24px;
-        font-size: 48px;
-        margin-top: 48px;
-    }
+    /* background-image: url('../assets/images/texture-paper-01.jpg') ; */
+    /* background-image: url('../assets/images/texture-marbre-bleu.jpg'); */
+    background-image: url('../assets/images/marbleu.jpg');
 }

@@ -26,7 +26,7 @@ export class CarnetComponent implements OnInit {
   }
 
   @ViewChild('page') page!:ElementRef
-  @ViewChild('sizeSlider') sizeSlider!:ElementRef
+  @ViewChild('sizeInfo') sizeInfo!:ElementRef
 
   // Abonnemanets
   drawSub?: Subscription
@@ -125,13 +125,6 @@ export class CarnetComponent implements OnInit {
     return col
   }
 
-  changeToolTab(event:any) {
-    event.currentTarget.querySelector('.active')?.classList.remove('active')
-    if (!event.target.parentElement.classList.contains('outils')) {
-      event.target.parentElement.classList.add('active')
-    }
-    else {event.target.classList.add('active')}
-  }
   changeTool(type:string) {
     // nettoyage des listeners d’outils
     this.canvas.off('mouse:down', this.erase )
@@ -139,11 +132,13 @@ export class CarnetComponent implements OnInit {
     this.canvas.isDrawingMode = false
     this.canvas.selection = false
     this.canvas.discardActiveObject();
+    this.sizeInfo.nativeElement.style.display = "none"
 
     this.tool.type = type;
     switch (type) {
       case 'Brush':
-        this.canvas.isDrawingMode = true;
+        this.sizeInfo.nativeElement.style.display = "flex"
+        this.canvas.isDrawingMode = true
         this.page.nativeElement.addEventListener('wheel', this.changeSize)
         break;
       case 'Select': 
