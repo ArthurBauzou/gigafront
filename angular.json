@@ -92,9 +92,7 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": [
-              "node_modules/fabric/dist/fabric.js"
-            ]
+            "scripts": []
           }
         }
       }

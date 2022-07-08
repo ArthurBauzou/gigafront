@@ -25,9 +25,6 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  ngAfterViewInit() {
-  }
-
   login(form:any) {
     if (form.value.username != '') {
       this._userService.loguser(form.value.username)

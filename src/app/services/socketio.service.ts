@@ -15,6 +15,7 @@ export class SocketioService {
   private users$ = new Subject<any>()
   private diceRes$ = new Subject<any>()
   private drawatch$ = new Subject<any>()
+  private modifW$ = new Subject<any>()
 
   constructor() { }
 
@@ -30,6 +31,9 @@ export class SocketioService {
   } 
   watchDraw() {
     return this.drawatch$.asObservable()
+  }
+  watchModif() {
+    return this.modifW$.asObservable()
   }
 
   sendMessage(message:Message) {
@@ -47,15 +51,19 @@ export class SocketioService {
   sendPath(path:any) {
     this.socket.emit('path0', path)
   }
+  sendModif(modif:any) {
+    this.socket.emit('modif0', modif)
+  }
 
   setupSocketConnection(user:any) {
     this.socket = io('http://glub.fr:3000')
     this.socket.emit('join0', user)
     this.socket.on('msg0', (msg:any) => { this.message$.next(msg) })
     this.socket.on('dice1', (res:any) => { this.diceRes$.next(res) })
-    this.socket.on('path1', (path:any) => { this.drawatch$.next(path) })
     this.socket.on('user0', (userlist:any) => { this.users$.next(userlist) })
     this.socket.on('token0', (token:string) => { localStorage.setItem("userToken", token) })
+    this.socket.on('path1', (path:any) => { this.drawatch$.next(path) })
+    this.socket.on('modif1', (modif:any) => { this.modifW$.next(modif) })
   }
   disconnect(){
     if(this.socket){

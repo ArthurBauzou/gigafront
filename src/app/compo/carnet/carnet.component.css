@@ -33,6 +33,7 @@ canvas {
     display: flex;
     padding-top: 11px;
     padding-left: 11px;
+    position: relative;
 }
 .navtop {
     margin: 12px;
@@ -139,6 +140,37 @@ canvas {
     align-self: flex-end;
 }
 
+.toolbelt {
+    height:50%;
+    font-size:28px;
+    color: gray;
+}
+.toolbelt>div{
+    margin-right: 16px;
+}
+.toolbelt .active {
+    color: white;
+}
+
+.sizeInfo {
+    padding-top: 4px;
+    height: 24px;
+    width: 48px;
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    background:rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 8px;
+    justify-content: space-evenly;
+}
+.sizeInfo > div {
+    height: 1px;
+    width: 1px;
+    background-color: white;
+    border: 0px solid white;
+    border-radius: 50%;
+}
 
 @media screen and (max-width: 800px) {
     :host {

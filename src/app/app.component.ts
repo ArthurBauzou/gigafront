@@ -14,12 +14,12 @@ export class AppComponent {
     fr: ''
   }
 
-  userid = ''
-  userSub:Subscription;
+  userid:string = this._userService.user.id
+  userSub:Subscription
 
   constructor(
     private _userService: UserService
-  ) {   
+  ) {
     this.userSub = this._userService.watchUser().subscribe((user) => {
       this.userid = user.id
     })

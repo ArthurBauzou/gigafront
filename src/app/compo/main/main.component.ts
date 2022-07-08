@@ -76,12 +76,13 @@ export class MainComponent {
       }
     })
   }
-  ngAfterViewInit() {
-    this.iniTextarea();
+  ngOnInit(){
     this.user = this._userService.user
   }
+  ngAfterViewInit() {
+    this.iniTextarea();
+  }
   ngAfterViewChecked() {
-    // console.log('afterViewChecked')
     this.autoScroll();
   }
 

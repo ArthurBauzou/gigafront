@@ -8,8 +8,11 @@
     <div id="mainrow" class="inline">
         <div class="navleft"></div>
         <div class="main" #page>
-            <canvas width="100" height="100" id="canvas1" (window:resize)="canvasResize()"></canvas>
-            <!-- <canvas width="500" height="500" id="canvas1"></canvas> -->
+            <canvas id="canvas1" (window:resize)="canvasResize()"></canvas>
+            <div class="sizeInfo inline">
+                <div [ngStyle]="{'border-width.px':tool.size-1,'margin-top.px':10-tool.size}"></div>
+                <span>{{tool.size}}</span>
+            </div>
         </div>
         <div class="navright"></div>
     </div>
@@ -21,14 +24,28 @@
 
 </div>
 <div class="barrebot inline">
+    <!-- <div class="docbar">
+        <div class="documents">
+            <div class="doc">
+
+            </div>
+            <div class="doc">
+
+            </div>
+        </div>
+        <div class="saveload">
+            <i class="fa-solid fa-file-arrow-down"></i>
+            <i class="fa-solid fa-file-arrow-up"></i>
+        </div>
+    </div> -->
     <div class="outils" (click)="changeToolTab($event)">
-        <div #color  class="active">
+        <div #color>
             <i class="fa-solid fa-droplet"></i>
         </div>
-        <div  #tool>
-            <i class="fa-solid fa-paintbrush" *ngIf="toolParam.type == 'Pinceau'"></i>
-            <i class="fa-solid fa-eraser" *ngIf="toolParam.type == 'Gomme'"></i>
-            <i class="fa-solid fa-skull" *ngIf="toolParam.type == 'Supergomme'"></i>
+        <div  #tooltype  class="active">
+            <i class="fa-solid fa-paintbrush" *ngIf="tool.type == 'Brush'"></i>
+            <i class="fa-solid fa-eraser" *ngIf="tool.type == 'Eraser'"></i>
+            <i class="fa-solid fa-arrow-pointer" *ngIf="tool.type == 'Select'"></i>
         </div>
         <div #file>
             <i class="fa-solid fa-floppy-disk"></i>
@@ -38,23 +55,21 @@
         <div *ngIf="color.classList.contains('active')">
             <div class="colorOpt">
                 <div class="colordiv" *ngFor="let col of palette" [style.background-color]="col" (click)="changeColor(col)">
-                    <i class="fa-solid fa-circle-check" *ngIf="toolParam.color == col"></i>
+                    <i class="fa-solid fa-circle-check" *ngIf="tool.color == col"></i>
                 </div>
             </div>
         </div>
-        <div *ngIf="tool.classList.contains('active')">
-            <div class="inline optLine">
-                <label>Type</label>
-                <select [ngModel]="toolParam.type" (change)="changeTool(toolType)" #toolType>
-                    <option value="Pinceau">Pinceau</option>
-                    <option value="Gomme">Gomme</option>
-                    <option value="Supergomme">Supergomme</option>
-                </select>
-            </div>
-            <div class="inline optLine">
-                <label for="sizeSlider">Taille</label>
-                <span>{{toolParam.size}}</span>
-                <input type="range" min="1" max="50" [ngModel]="toolParam.size" step="1" (change)="changeSize(sizeSlider)" #sizeSlider id="sizeSlider" name="sizeSlider">
+        <div *ngIf="tooltype.classList.contains('active')">
+            <div class="inline optLine toolbelt">
+                <div (click)="changeTool('Select')" [ngClass]="{'active':tool.type == 'Select'}">
+                    <i class="fa-solid fa-arrow-pointer"></i>
+                </div>
+                <div (click)="changeTool('Brush')" [ngClass]="{'active':tool.type == 'Brush'}">
+                    <i class="fa-solid fa-paintbrush"></i>
+                </div>
+                <div (click)="changeTool('Eraser')" [ngClass]="{'active':tool.type == 'Eraser'}">
+                    <i class="fa-solid fa-eraser"></i>
+                </div>
             </div>
         </div>
         <div *ngIf="file.classList.contains('active')">
