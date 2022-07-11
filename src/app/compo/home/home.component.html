@@ -1,11 +1,7 @@
 <div class="loginWindow colon">
   <h3>Bonjour,</h3>
-  <!-- <p>connectez vous avec un nom au pif</p> -->
   <form #usernameForm="ngForm" (ngSubmit)="login(usernameForm)" class="colon">
-    <label for="username">Nom</label>
-    <input type="text" id="username" name="username" ngModel maxlength="38">
-    <!-- <label for="room"></label>
-    <input type="text" id="room" name="room" ngModel maxlength="24"> -->
+    <input type="text" id="username" name="username" ngModel maxlength="38" placeholder="entrez un nom">
     <button type="submit">Connexion</button>
   </form>
   <div *ngIf="prevUser.id" class="reconnect inline">

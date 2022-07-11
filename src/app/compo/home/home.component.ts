@@ -18,11 +18,6 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     if (this._userService.checkToken()) {this.prevUser = this._userService.token}
     this.params = this._userService.checkParams();
-    if (this.params.autoreco == 'oui') { this._userService.reconnect() }
-    else if (this.params.autoreco == 'hack') { 
-      this._userService.updateParams({autoreco: 'oui'})
-      this.params.autoreco = 'oui'
-    }
   }
 
   login(form:any) {

@@ -21,21 +21,32 @@
 </div>
 <div class="docbar inline">
     <div class="documents">
-        <div class="doc">
-            a
-        </div>
-        <div class="doc">
-            b
+        <div class="doc" *ngFor="let l of layers" [style.background-color]="l.color">
+            <span>{{l.username | slice:0:1}}{{l.index}}</span>
+            
         </div>
     </div>
     <div class="saveload inline">
         <div>
-            <i class="fa-solid fa-file-arrow-down"></i>
+            <i class="fa-solid fa-circle-plus"></i>
         </div>
         <div>
-            <i class="fa-solid fa-file-arrow-up"></i>
+            <i class="fa-solid fa-file-arrow-down"></i>
         </div>
-
+        <div class="hid-container" (click)="delbut.classList.toggle('hidd')">
+            <i class="fa-solid fa-trash-can"></i>
+            <div class="hid-element hidd" #delbut>
+                <p>effacer vos dessins ?</p>
+                <div (click)="delMyDocs()" class="destroy">
+                    <i class="fa-solid fa-skull"></i>
+                    <span>EFFACER</span>
+                </div>
+                <div>
+                    <i class="fa-solid fa-rectangle-xmark"></i>
+                    <span>ANNULER</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="barrebot inline">
@@ -45,18 +56,19 @@
     </div>
     <div class="toolbelt">
         <div (click)="changeTool('Brush')" [ngClass]="{'active':tool.type == 'Brush'}">
-            <i class="fa-solid fa-paintbrush"></i>
+            <i class="fa-solid fa-paintbrush" style="padding-right: 2px"></i>
         </div>
         <div (click)="changeTool('Select')" [ngClass]="{'active':tool.type == 'Select'}">
-            <i class="fa-solid fa-arrow-pointer" style="padding-left: 12px"></i>
+            <i class="fa-solid fa-arrow-pointer" style="padding-left: 4px"></i>
         </div>
         <div (click)="changeTool('Eraser')" [ngClass]="{'active':tool.type == 'Eraser'}">
-            <i class="fa-solid fa-eraser"></i>
+            <i class="fa-solid fa-scissors"></i>
         </div>
+
     </div>
     <div class="colorOpt">
-        <div class="colordiv" *ngFor="let col of palette" [style.background-color]="col" (click)="changeColor(col)">
-            <i class="fa-solid fa-circle-check" *ngIf="tool.color == col"></i>
+        <div class="colordiv" *ngFor="let col of palette3" [style.background-color]="col" (click)="changeColor(col)">
+            <i class="fa-solid fa-circle-check" *ngIf="tool.color == col" [style.color]="getColorByBgColor(col)"></i>
         </div>
     </div>
 

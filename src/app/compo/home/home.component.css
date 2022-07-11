@@ -10,10 +10,14 @@
     margin: 64px auto;
 }
 .loginWindow input {
-    font-size: 32px;
+    font-size: 28px;
     margin: 12px 0px;
+    padding: 8px;
     border: none;
     outline: none;
+}
+.loginWindow input::placeholder {
+    color: #ddd
 }
 .loginWindow button {
     width: 30%;

@@ -16,6 +16,7 @@ export class SocketioService {
   private diceRes$ = new Subject<any>()
   private drawatch$ = new Subject<any>()
   private modifW$ = new Subject<any>()
+  private layers$ = new Subject<any>()
 
   constructor() { }
 
@@ -34,6 +35,9 @@ export class SocketioService {
   }
   watchModif() {
     return this.modifW$.asObservable()
+  }
+  watchLayers() {
+    return this.layers$.asObservable()
   }
 
   sendMessage(message:Message) {
@@ -64,6 +68,7 @@ export class SocketioService {
     this.socket.on('token0', (token:string) => { localStorage.setItem("userToken", token) })
     this.socket.on('path1', (path:any) => { this.drawatch$.next(path) })
     this.socket.on('modif1', (modif:any) => { this.modifW$.next(modif) })
+    this.socket.on('layers', (layers:any) => { this.layers$.next(layers) })
   }
   disconnect(){
     if(this.socket){

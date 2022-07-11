@@ -25,5 +25,4 @@ export class UtilService {
     return Array.from(arr, this.dec2hex).join('')
   }
 
-
 }

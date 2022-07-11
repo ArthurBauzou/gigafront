@@ -79,9 +79,6 @@ canvas {
 }
 
 .docbar {
-    /* background: rgba(255, 255, 255, 0.6); */
-    /* border-top: 2px solid rgba(255, 255, 255, 0.6); */
-    height: 42px;
     border: none;
 }
 .documents {
@@ -89,63 +86,74 @@ canvas {
     background: rgba(255, 255, 255, 0.3);
     display: flex;
     flex-flow: row wrap;
-    padding-left: 24px;
+    padding-left: 32px;
 }
 .documents .doc {
-    height: 32px;
-    width: 32px;
-    background-color: coral;
+    height: 24px;
+    width: 24px;
     border-radius: 4px;
-    margin-top: 5px;
-    margin-right: 5px;
+    margin-top: 7px;
+    margin-right: 12px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    font-size: 12px;
+    padding-right: 2px;
+
 }
 .saveload {
-    margin-left: auto;
-    padding: 4px 24px;
-    padding-left: 8px;
+    padding: 4px;
     background-color: rgba(0, 0, 0, 0.5);
     color: gray;
-    font-size: 28px;
-    justify-items: space-around;
+    font-size: 24px;
 }
 .saveload > div {
-    margin-left: 12px;
+    margin-left: 8px;
 }
 .saveload > div:hover {
     color: white;
 }
+.saveload .hid-container {
+    position: relative;
+    margin: 0px 8px 0px 16px;
+}
+.saveload .hid-element {
+    position: absolute;
+    bottom: -2px;
+    right: 0px;
+    font-size: 14px;
+    z-index: 10;
+    color: rgba(255, 255, 255, 0.7);
+    background-color: black;
+    transform: translateX(60%);
+    width: 200px;
+    text-align: center;
+    padding: 24px 0px;
+    border-radius: 8px;
+}
+.saveload .hid-element>p {
+    margin-top: 0;
+}
+.saveload .hid-element>div {
+    cursor: pointer;
+    margin-top: 8px;
+}
+.saveload .hid-element>div:hover span {
+    color: white;
+}
+.saveload .hid-element>div.destroy:hover span {
+    color: red;
+}
+.saveload .hid-element>div i {
+    padding-right: 12px;
+    color: white;
+}
 
 .barrebot {
-    /* height: 96px; */
     background: rgba(0, 0, 0, 0.5);
-    /* border-top: 2px black solid; */
     padding: 12px 64px;
     position: relative;
 }
-/* .outils div {
-    color: white;
-    font-size: 24px;
-    width: 32px;
-    text-align: center;
-    padding: 4px;
-}
-.outils div.active {
-    background:rgba(255, 255, 255, 0.25)
-}
-.outils div:hover {
-    background:rgba(255, 255, 255, 0.35)
-}
-.options {
-    width: 325px;
-    border: 4px rgba(255, 255, 255, 0.25) solid;
-    padding: 8px;
-    font-size: 12px;
-    color: white;
-}
-.options>div {
-    height: 100%;
-    width: 100%;
-} */
 
 .colorOpt {
     display: flex;
@@ -162,46 +170,40 @@ canvas {
     position: absolute;
     bottom: 4px;
     right: 4px;
+    color: white;
 }
 .colordiv:hover {
     z-index: 10;
     transform: scale(1.1);
 }
-/* 
-.optLine {
-    padding: 0 12px;
-}
-.optLine :is(label,span,input) {
-    padding-bottom: 10px;
-    flex-grow: 1;
-    align-self: flex-end;
-} */
+
 
 .toolbelt {
-    font-size:24px;
+    font-size:20px;
     color: gray;
+    display: flex;
+    flex-flow: column wrap;
+    margin-right: 12px;
 }
 .toolbelt>div{
-    margin-right: 16px;
+    padding: 2px;
     border-left: 3px solid transparent;
 }
 .toolbelt>div:hover{
     border-left: 3px solid gray;
-}
-.toolbelt>div i{
-    padding-left: 4px;
 }
 
 .toolbelt .active {
     color: white;
 }
 
+
 .sizeInfo {
     padding-top: 4px;
     height: 24px;
     width: 52px;
     position: absolute;
-    left: 16px;
+    left: 14px;
     top: 14px;
     color: gray;
     justify-content: space-evenly;
@@ -213,6 +215,9 @@ canvas {
     border: 0px solid white;
     border-radius: 50%;
 }
+
+
+
 
 @media screen and (max-width: 800px) {
     :host {

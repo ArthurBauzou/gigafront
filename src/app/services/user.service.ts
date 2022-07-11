@@ -82,10 +82,9 @@ export class UserService {
     this.token = {}
     this.params = this.DEFAULTPARAMS
   }
-
   disconnect() {
     this.user = {id: '', name: '', color: ''}
-    this.updateParams({autoreco: 'hack'})
     this.user$.next(this.user)
   }
+
 }

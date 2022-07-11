@@ -8,7 +8,6 @@ import { UserService } from './services/user.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'gigachat';
   logo = {
     main: '',
     fr: ''
@@ -24,6 +23,12 @@ export class AppComponent {
       this.userid = user.id
     })
     this.getRandomLogo()
+  }
+
+  ngOnInit() {
+    if (this._userService.checkToken() && this._userService.checkParams().autoreco == 'oui') {
+      this._userService.reconnect()
+    }
   }
 
   getRandomLogo(){
