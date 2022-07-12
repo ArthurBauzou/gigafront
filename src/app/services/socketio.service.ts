@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { io } from 'socket.io-client'
-import { environment } from 'src/environments/environment';
+import { io } from 'socket.io-client';
 import { Message } from '../models/message.model';
-import { Subject } from 'rxjs'
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +16,7 @@ export class SocketioService {
   private drawatch$ = new Subject<any>()
   private modifW$ = new Subject<any>()
   private layers$ = new Subject<any>()
+  private delobs$ = new Subject<any>()
 
   constructor() { }
 
@@ -39,6 +39,9 @@ export class SocketioService {
   watchLayers() {
     return this.layers$.asObservable()
   }
+  watchDeletion() {
+    return this.delobs$.asObservable()
+  }
 
   sendMessage(message:Message) {
     this.socket.emit('send0', message)
@@ -58,6 +61,9 @@ export class SocketioService {
   sendModif(modif:any) {
     this.socket.emit('modif0', modif)
   }
+  sendDeletion(delobj:any) {
+    this.socket.emit('del0', delobj)
+  }
 
   setupSocketConnection(user:any) {
     this.socket = io('http://glub.fr:3000')
@@ -69,6 +75,7 @@ export class SocketioService {
     this.socket.on('path1', (path:any) => { this.drawatch$.next(path) })
     this.socket.on('modif1', (modif:any) => { this.modifW$.next(modif) })
     this.socket.on('layers', (layers:any) => { this.layers$.next(layers) })
+    this.socket.on('del1', (delobj:any) => { this.delobs$.next(delobj) })
   }
   disconnect(){
     if(this.socket){

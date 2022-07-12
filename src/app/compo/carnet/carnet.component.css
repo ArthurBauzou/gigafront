@@ -92,7 +92,7 @@ canvas {
     height: 24px;
     width: 24px;
     border-radius: 4px;
-    margin-top: 7px;
+    margin-top: 6px;
     margin-right: 12px;
     display: flex;
     align-items: flex-end;
@@ -119,26 +119,26 @@ canvas {
 }
 .saveload .hid-element {
     position: absolute;
-    bottom: -2px;
+    bottom: 46px;
     right: 0px;
-    font-size: 14px;
+    font-size: 16px;
     z-index: 10;
     color: rgba(255, 255, 255, 0.7);
     background-color: black;
-    transform: translateX(60%);
+    border: 8px solid firebrick;
     width: 200px;
     text-align: center;
     padding: 24px 0px;
-    border-radius: 8px;
 }
 .saveload .hid-element>p {
     margin-top: 0;
 }
 .saveload .hid-element>div {
     cursor: pointer;
-    margin-top: 8px;
+    margin-top: 16px;
 }
 .saveload .hid-element>div:hover span {
+    font-weight: bold;
     color: white;
 }
 .saveload .hid-element>div.destroy:hover span {
