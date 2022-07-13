@@ -21,12 +21,13 @@ export class CarnetComponent implements OnInit {
   canvas:fabric.Canvas = new fabric.Canvas('canvas01')
   groups :Map<string,fabric.Group[]> = new Map
   layers:any[] = []
-  indlayer:number = 0
+  indexActive:number = 0
   tool = {
     color: this.randomColor(this.palette3),
     type: 'Brush',
     size: 4
   }
+  undotable:any = []
 
   @ViewChild('page') page!:ElementRef
   @ViewChild('sizeInfo') sizeInfo!:ElementRef
@@ -37,38 +38,33 @@ export class CarnetComponent implements OnInit {
   layersSub?: Subscription
   delSub?: Subscription
 
-  // Callbacks des 'on'
-  sendPath = (obj:any) => {
-    let paquet = {
-      userid: this._userService.user.id,
-      layer: this.indlayer,
-      path: obj.path
-    }
-    this._socketioService.sendPath(paquet)
-    this.groups.get(this._userService.user.id)![this.indlayer].addWithUpdate(obj.path)
+  // FONCTIONS CALLBACKS DES LISTENERS
+  addObjectFromCanvas = (obj:any) => {
+    this.sendObj(obj.path)
+    this.groups.get(this._userService.user.id)![this.indexActive].addWithUpdate(obj.path)
     this.canvas.remove(obj.path)
     this.saveMyDocs()
     this.canvas.renderAll();
-  };
+  }
   sendModif = (doc:fabric.IEvent) => {
+    if (!doc.target) {return}
     let modif = {
       type: doc.e.type,
-      top: doc.target?.top,
-      left: doc.target?.left,
-      angle: doc.target?.angle,
-      scaleX: doc.target?.scaleX,
-      scaleY: doc.target?.scaleY
+      top: doc.target.top,
+      left: doc.target.left,
+      angle: doc.target.angle,
+      scaleX: doc.target.scaleX,
+      scaleY: doc.target.scaleY,
+      flipX: doc.target.flipX,
+      flipY: doc.target.flipY
     }
     let paquet = {
       userid: this._userService.user.id,
-      layer: this.indlayer,
+      index: this.indexActive,
       modif: modif
     }
     this._socketioService.sendModif(paquet)
     this.saveMyDocs()
-  }
-  erase = (obj:fabric.IEvent) => {
-    console.log(obj)
   }
   changeSize = (e:WheelEvent) => {
     if (e.deltaY < 0 && this.tool.size < 10) {
@@ -79,40 +75,62 @@ export class CarnetComponent implements OnInit {
     }
     this.canvas.freeDrawingBrush.width = this.sizePalette[this.tool.size-1]
   }
+  undoRedo = (e:KeyboardEvent) => {
+    let grp = this.groups.get(this._userService.user.id)![this.indexActive]
+    if (e.key == 'z' && e.ctrlKey && grp._objects.length > 0) {
+      let rmobj = grp._objects[grp._objects.length-1]
+      this.undotable.push(rmobj)
+      grp.removeWithUpdate(rmobj)
+      if (this.undotable.length > 20) {this.undotable.shift()}
+      grp.dirty = true
+      this._socketioService.sendDeletion({
+        type: 'undo',
+        userid: this._userService.user.id,
+        index: this.indexActive
+      })
+    }
+    if (e.key == 'y' && e.ctrlKey && this.undotable.length > 0) {
+      let addobj = this.undotable.pop()
+      this.sendObj(addobj)
+      grp.addWithUpdate(addobj)
+      grp.dirty = true
+    }
+    this.canvas.renderAll()
+  }
 
   constructor(
     private _socketioService: SocketioService,
     private _userService: UserService
-  ) { 
+  ) {
+    // RECEPTION DES AJOUTS AUX CALQUES
     this.drawSub = this._socketioService.watchDraw().subscribe((paq) => {
-      fabric.util.enlivenObjects([paq.path], (objects:Path[]) => {
+      fabric.util.enlivenObjects([paq.object], (objects:Path[]) => {
         objects.forEach((o) => { 
-          this.groups.get(paq.userid)![paq.indlayer].addWithUpdate(o) 
+          this.groups.get(paq.userid)![paq.index].addWithUpdate(o) 
         });
       }, 'fabric');
-   
       this.canvas.renderAll();
     })
 
+    // RECEPTION DES MODIFICATIONS DES CALQUES
     this.modifSub = this._socketioService.watchModif().subscribe((paq) => {
-      let amod = this.groups.get(paq.userid)![paq.indlayer];
+      let amod = this.groups.get(paq.userid)![paq.index];
       amod.top = paq.modif.top
       amod.left = paq.modif.left
-      amod.angle = paq.modif.angle,
-      amod.scaleX = paq.modif.scaleX,
+      amod.angle = paq.modif.angle
+      amod.scaleX = paq.modif.scaleX
       amod.scaleY = paq.modif.scaleY
-
+      amod.flipX = paq.modif.flipX
+      amod.flipY = paq.modif.flipY
       this.canvas.renderAll();
     })
 
+    // RECEPTION DE LA LISTE DES CALQUES
     this.layersSub = this._socketioService.watchLayers().subscribe((layers) => {
-
       this.layers = layers
-
       // création des documents en fonction des layers reçus
       layers.forEach((l:any,i:number)=>{
         if (!this.groups.get(l.userid) || this.groups.get(l.userid)!.length < i) {
-          console.log('newdoc')
           let newdoc:any = new fabric.Group([],{})
           newdoc.selectable = false
           if (!this.groups.get(l.userid)) {
@@ -122,36 +140,41 @@ export class CarnetComponent implements OnInit {
             this.groups.get(l.userid)![l.index] = newdoc
           }
           this.canvas.add(this.groups.get(l.userid)![l.index])
+          console.log('newdoc')
         }
-        
-        // synchronisation de l‘ordre des calques (!marche pas!)
+        // synchronisation de l‘ordre des calques
         this.groups.get(l.userid)![l.index].moveTo(i)
-
       })
-
     })
 
+    // RECEPTION DES SUPPRESSIONS
     this.delSub = this._socketioService.watchDeletion().subscribe((delobj) => {
+      let grps = this.groups.get(delobj.userid)
+      if (!grps) {console.log('pas de groupes');return}
       switch(delobj.type) {
         case 'all':
-          this.groups.get(delobj.userid)?.forEach((group) => {
-            this.canvas.remove(group)
-          })
-          this.groups.delete(delobj.userid)
-          // console.log('deco',this.groups,this.canvas)
+          for (let i = grps.length-1; i > 0; i--) {
+            this.canvas.remove(grps[i])
+            grps.pop()
+          }
+          grps[0]._objects = []
+          grps[0].dirty = true
           break;
         case 'undo':
+          let rmobj = grps[delobj.index]._objects[grps[delobj.index]._objects.length-1]
+          grps[delobj.index].removeWithUpdate(rmobj)
           break;
       }
+      this.canvas.renderAll();
     })
+
   }
 
-
+  // INITIALISATIONS
   ngOnInit(): void {
     this.canvas = this.initCanvas('canvas1')
     this.canvas.freeDrawingBrush.color = this.tool.color;
-    
-    this.canvas.on('path:created', this.sendPath);
+    this.canvas.on('path:created', this.addObjectFromCanvas);
     this.canvas.on('object:modified', this.sendModif);
   }
   ngAfterViewInit() {
@@ -160,46 +183,6 @@ export class CarnetComponent implements OnInit {
     this.changeTool('Brush');
     this.canvas.freeDrawingBrush.width = this.sizePalette[this.tool.size-1];
   }
-
-  initMyDocs() {
-    if (!localStorage.getItem('myDocs')) {
-      let newdoc = new fabric.Group([],{})
-      this.groups.set(this._userService.user.id, [newdoc])
-      this.canvas.add(this.groups.get(this._userService.user.id)![0])
-    }
-    else {
-      let myDocs = JSON.parse(localStorage.getItem('myDocs')!)
-      fabric.util.enlivenObjects(myDocs, (objects:fabric.Group[]) => {
-        this.groups.set(this._userService.user.id, objects)
-      }, 'fabric');
-      this.canvas.add(this.groups.get(this._userService.user.id)![0])
-      // this.sendMyDoc(this.groups.get(this._userService.user.id)![0])
-    }
-  }
-  saveMyDocs() {
-    let doctable = []
-    doctable[0] = this.groups.get(this._userService.user.id)![0].toJSON()
-    localStorage.setItem('myDocs',JSON.stringify(doctable))
-  }
-  delMyDocs() {
-    localStorage.removeItem('myDocs')
-    this.canvas.remove(this.groups.get(this._userService.user.id)![0])
-    this.groups.delete(this._userService.user.id)
-    this._socketioService.sendDeletion({
-      userid:this._userService.user.id,
-      type:'all'
-    })
-    // recréation d’un document vierge qui sera sauvegardé au premier coup de pinceau
-    let newdoc = new fabric.Group([],{})
-    this.groups.set(this._userService.user.id, [newdoc])
-    this.canvas.add(this.groups.get(this._userService.user.id)![0])
-  }
-  sendMyDoc(doc:any) {
-    let groupObj = doc._objects
-    doc._objects = []
-    console.log(groupObj, doc)
-  }
-
   initCanvas(id:string) {
     let can = new fabric.Canvas(id, {
       backgroundColor: this.palette3[11],
@@ -208,19 +191,72 @@ export class CarnetComponent implements OnInit {
     });
     return can
   }
-  canvasResize() {
-    this.canvas.setHeight(this.page.nativeElement.clientHeight - 24)
-    this.canvas.setWidth(this.page.nativeElement.clientWidth - 24)
+
+  // GESTION DOCUMENTS LOCAUX
+  initMyDocs() {
+    // if (!localStorage.getItem('myDocs')) {
+    //   let newdoc = new fabric.Group([],{})
+    //   this.groups.set(this._userService.user.id, [newdoc])
+    //   this.canvas.add(this.groups.get(this._userService.user.id)![0])
+    // }
+    // else {
+    //   let myDocs = JSON.parse(localStorage.getItem('myDocs')!)
+    //   fabric.util.enlivenObjects(myDocs, (objects:fabric.Group[]) => {
+    //     this.groups.set(this._userService.user.id, objects)
+    //   }, 'fabric');
+    //   this.canvas.add(this.groups.get(this._userService.user.id)![0])
+    // }
+    let newdoc = new fabric.Group([],{})
+    this.groups.set(this._userService.user.id, [newdoc])
+    this.canvas.add(this.groups.get(this._userService.user.id)![0])
   }
-  randomColor(list:string[]):string {
-    let col:string = list[Math.floor(Math.random()*list.length)]
-    return col
+  saveMyDocs() {
+    let doctable = []
+    doctable[0] = this.groups.get(this._userService.user.id)![0].toJSON()
+    localStorage.setItem('myDocs',JSON.stringify(doctable))
+  }
+  delMyDocs() {
+    localStorage.removeItem('myDocs')
+    let grps = this.groups.get(this._userService.user.id)
+    if (!grps) {console.log('pas de groupes');return}
+
+    for (let i = grps.length-1; i > 0; i--) {
+      this.canvas.remove(grps[i])
+      grps.pop()
+    }
+    grps[0]._objects = []
+    grps[0].dirty = true
+
+    this._socketioService.sendDeletion({
+      userid:this._userService.user.id,
+      type:'all'
+    })
+    this.canvas.renderAll();
+    this.changeTool('Brush')
   }
 
+  // sendMyDoc(doc:any) {
+  //   let groupObj = doc._objects
+  //   doc._objects = []
+  //   console.log(groupObj, doc)
+  // }
+
+
+  sendObj(obj:any) {
+    let paquet = {
+      userid: this._userService.user.id,
+      index: this.indexActive,
+      object: obj
+    }
+    this._socketioService.sendPath(paquet)
+  };
+
+
+  // OUTILS
   changeTool(type:string) {
     // nettoyage
-    this.canvas.off('mouse:down', this.erase )
     this.page.nativeElement.removeEventListener('wheel', this.changeSize)
+    document.removeEventListener('keydown', this.undoRedo)
     this.canvas.isDrawingMode = false
     this.canvas.selection = false
     this.canvas.discardActiveObject();
@@ -232,25 +268,33 @@ export class CarnetComponent implements OnInit {
         this.sizeInfo.nativeElement.style.display = "flex"
         this.canvas.isDrawingMode = true
         this.page.nativeElement.addEventListener('wheel', this.changeSize)
+        document.addEventListener('keydown', this.undoRedo)
         break;
       case 'Select': 
-        this.canvas.selection = true
         this.canvas.setActiveObject(this.groups.get(this._userService.user.id)![0])
         this.canvas.drawControls(this.canvas.getContext())
         break;
-      case 'Eraser':
-        this.canvas.on('mouse:down', this.erase )
+      case 'Cutter':
+        this.canvas.selection = true
         break;
     }
     this.canvas.renderAll();
   }
-
   changeColor(col:string) {
     this.tool.color = col
     this.canvas.freeDrawingBrush.color = this.tool.color;
     this.changeTool('Brush');
   }
 
+  // UTILITAIRES
+  canvasResize() {
+    this.canvas.setHeight(this.page.nativeElement.clientHeight - 24)
+    this.canvas.setWidth(this.page.nativeElement.clientWidth - 24)
+  }
+  randomColor(list:string[]):string {
+    let col:string = list[Math.floor(Math.random()*list.length)]
+    return col
+  }
   // choisir du noir ou du blanc en fonction de la couleur d’arrière plan
   getColorByBgColor(bgColor:string) {
     return (parseInt(bgColor.replace('#', ''), 16) > 0xffffff / 2) ? '#000' : '#fff';

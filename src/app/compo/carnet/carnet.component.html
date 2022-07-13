@@ -21,7 +21,7 @@
 </div>
 <div class="docbar inline">
     <div class="documents">
-        <div class="doc" *ngFor="let l of layers" [style.background-color]="l.color">
+        <div class="doc" *ngFor="let l of layers.slice().reverse()" [style.background-color]="l.color">
             <span>{{l.username | slice:0:1}}{{l.index}}</span>
             
         </div>
@@ -61,7 +61,7 @@
         <div (click)="changeTool('Select')" [ngClass]="{'active':tool.type == 'Select'}">
             <i class="fa-solid fa-arrow-pointer" style="padding-left: 4px"></i>
         </div>
-        <div (click)="changeTool('Eraser')" [ngClass]="{'active':tool.type == 'Eraser'}">
+        <div (click)="changeTool('Cutter')" [ngClass]="{'active':tool.type == 'Cutter'}">
             <i class="fa-solid fa-scissors"></i>
         </div>
 
