@@ -1,0 +1,85 @@
+
+
+<style>
+canvas {
+    border: 0.5px solid #cccccc; 
+    border-radius: 18px;
+}
+#toprow {
+    height: 4%;
+    justify-content: center;
+}
+#botrow {
+    height: 4%;
+    justify-content: center;
+}
+.main {
+    background: white;
+    border-radius: 24px;
+    flex-grow: 1;
+    display: flex;
+    padding-top: 11px;
+    padding-left: 11px;
+    position: relative;
+}
+.navtop {
+    margin: 12px;
+    margin-top: 0px;
+    border: 1px beige dashed;
+    border-top: none;
+    opacity: 0.4;
+    border-bottom-right-radius: 24px;
+    border-bottom-left-radius: 24px;
+    flex-grow: 1;
+}
+.navbot {
+    margin: 12px;
+    margin-bottom: 0px;
+    border: 1px beige dashed;
+    border-bottom: none;
+    opacity: 0.4;
+    border-top-right-radius: 24px;
+    border-top-left-radius: 24px;
+    flex-grow: 1;
+}
+.navleft {
+    margin-right: 12px;
+    border: 1px beige dashed;
+    border-left: none;
+    opacity: 0.4;
+    border-bottom-right-radius: 24px;
+    border-top-right-radius: 24px;
+    width: 4%;
+}
+.navright {
+    margin-left: 12px;
+    border: 1px beige dashed;
+    border-right: none;
+    opacity: 0.4;
+    border-bottom-left-radius: 24px;
+    border-top-left-radius: 24px;
+    width: 4%;
+}
+.corner {
+    width: 4%;
+    height: 4%;
+}
+</style>
+
+<div id="toprow" class="inline">
+    <div class="corner"></div>
+    <div class="navtop"></div>
+    <div class="corner"></div>
+</div>
+<div id="mainrow" class="inline">
+    <div class="navleft"></div>
+    <div class="main" #page>
+        <canvas id="canvas1" (window:resize)="canvasResize()"></canvas>
+    </div>
+    <div class="navright"></div>
+</div>
+<div id="botrow" class="inline">
+    <div class="corner"></div>
+    <div class="navbot"></div>
+    <div class="corner"></div>
+</div>

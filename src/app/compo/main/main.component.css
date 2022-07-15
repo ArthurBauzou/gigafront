@@ -12,9 +12,8 @@
 }
 
 .gigachat {
-    /* border-left: 1px black solid; */
     padding: 4px;
-    width: 30%;
+    width: 25%;
     background: #424242;
 }
 .gigachat button {
@@ -224,7 +223,7 @@ div.quote i {
 
 @media screen and (max-width: 1128px) {
     .gigachat {
-        width: 40%;
+        width: 35%;
     }
 }
 

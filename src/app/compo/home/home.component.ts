@@ -40,6 +40,7 @@ export class HomeComponent implements OnInit {
     this.prevUser = {id: '', name: '', color: ''}
     this.params = this._userService.DEFAULTPARAMS
     this._userService.purgeToken()
+    localStorage.removeItem('myDocs')
   }
 
 }

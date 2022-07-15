@@ -64,6 +64,9 @@ export class SocketioService {
   sendDeletion(delobj:any) {
     this.socket.emit('del0', delobj)
   }
+  editLayers(layerobj:any) {
+    this.socket.emit('layers0', layerobj)
+  }
 
   setupSocketConnection(user:any) {
     this.socket = io('http://glub.fr:3000')
@@ -74,7 +77,7 @@ export class SocketioService {
     this.socket.on('token0', (token:string) => { localStorage.setItem("userToken", token) })
     this.socket.on('path1', (path:any) => { this.drawatch$.next(path) })
     this.socket.on('modif1', (modif:any) => { this.modifW$.next(modif) })
-    this.socket.on('layers', (layers:any) => { this.layers$.next(layers) })
+    this.socket.on('layers1', (layers:any) => { this.layers$.next(layers) })
     this.socket.on('del1', (delobj:any) => { this.delobs$.next(delobj) })
   }
   disconnect(){

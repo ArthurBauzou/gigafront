@@ -1,27 +1,13 @@
 <div class="carnet">
-
-    <div id="toprow" class="inline">
-        <div class="corner"></div>
-        <div class="navtop"></div>
-        <div class="corner"></div>
+    <div id="mainrow" #page>
+        <canvas id="canvas1" (window:resize)="canvasResize()" style="border-radius:12px"></canvas>
     </div>
-    <div id="mainrow" class="inline">
-        <div class="navleft"></div>
-        <div class="main" #page>
-            <canvas id="canvas1" (window:resize)="canvasResize()"></canvas>
-        </div>
-        <div class="navright"></div>
-    </div>
-    <div id="botrow" class="inline">
-        <div class="corner"></div>
-        <div class="navbot"></div>
-        <div class="corner"></div>
-    </div>
-
 </div>
 <div class="docbar inline">
     <div class="documents">
-        <div class="doc" *ngFor="let l of layers.slice().reverse()" [style.background-color]="l.color">
+        <div class="doc" *ngFor="let l of layers.slice().reverse()" 
+        [style.background-color]="l.color"
+        [ngClass]="{active:l.index == indexActive && l.userid == localuser}">
             <span>{{l.username | slice:0:1}}{{l.index}}</span>
             
         </div>

@@ -43,7 +43,8 @@ div.reste {
     flex: 1 1 auto;
     display: flex;
     flex-flow: row nowrap;
-    background-image: url('../assets/images/backbulle.jpg');
+    background-image: url('../assets/images/texture-mur.jpeg');
+    background-size: cover;
 }
 /* background-image: url('../assets/images/texture-feuilles.jpg'); */
 /* background-image: url('../assets/images/marbleu.jpg'); */
