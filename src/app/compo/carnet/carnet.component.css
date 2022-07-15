@@ -17,6 +17,7 @@
 }
 .docbar {
     border: none;
+    z-index: 2;
 }
 .documents {
     flex-grow: 1;
@@ -29,7 +30,7 @@
     height: 20px;
     width: 16px;
     border: 2px transparent solid;
-    border-radius: 2px;
+    border-radius: 3px;
     margin-top: 6px;
     margin-right: 12px;
     display: flex;
@@ -38,9 +39,10 @@
     font-size: 8px;
     font-weight: 800;
     padding-right: 2px;
+    background: rgba(0, 0, 0, 0.8);
 }
 .documents .doc.active {
-    border-color: black;
+    border-color: white;
 }
 
 .saveload {
@@ -50,6 +52,7 @@
     font-size: 24px;
 }
 .saveload > div {
+    height: auto;
     margin-left: 8px;
 }
 .saveload > div:hover {
