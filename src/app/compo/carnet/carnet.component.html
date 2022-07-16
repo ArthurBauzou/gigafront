@@ -5,6 +5,7 @@
 </div>
 <div class="docbar inline">
     <div class="documents">
+        <div class="dropdiv"></div>
         <div class="doc" draggable="true"
         *ngFor="let l of layers.slice().reverse()" 
         [style.color]="l.color"
@@ -38,9 +39,21 @@
     </div>
 </div>
 <div class="barrebot inline">
-    <div class="sizeInfo inline" #sizeInfo>
-        <span>{{tool.size}}</span>
-        <div [ngStyle]="{'border-width.px':tool.size-1,'margin-top.px':10-tool.size}"></div>
+    <div class="tooloption colon" #brushOptions >
+        <div class="inline" (click)="manualChangeSize($event)">
+            <span>{{tool.size}}</span>
+            <div class="sizedisc" [ngStyle]="{'border-width.px':tool.size-1,'margin-top.px':10-tool.size}"></div>
+        </div>
+        <div class="inline" (click)="manualUndoRedo($event)">
+            <i class="fa-solid fa-rotate-left"></i>
+            <i class="fa-solid fa-rotate-right"></i>
+        </div>
+    </div>
+    <div class="tooloption colon" #selectOptions>
+        <div class="inline">
+            <i class="fa-solid fa-clone"></i>
+            <i class="fa-solid fa-square-minus"></i>
+        </div>
     </div>
     <div class="toolbelt">
         <div (click)="changeTool('Brush')" [ngClass]="{'active':tool.type == 'Brush'}">

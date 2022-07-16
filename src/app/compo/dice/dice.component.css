@@ -20,7 +20,7 @@
     background: black;
     color: white;
     font-size: 9px;
-    z-index: 15;
+    z-index: 2;
     text-align: center;
     cursor: not-allowed;
 }

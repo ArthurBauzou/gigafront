@@ -43,10 +43,8 @@ div.reste {
     flex: 1 1 auto;
     display: flex;
     flex-flow: row nowrap;
-    background-image: url('../assets/images/texture-mur.jpeg');
+    background-image: url('../assets/images/texture-wood.jpg');
     background-size: cover;
+    background-position: center;
 }
-/* background-image: url('../assets/images/texture-feuilles.jpg'); */
-/* background-image: url('../assets/images/marbleu.jpg'); */
-/* background-image: url('../assets/images/texture-paper-01.jpg') ; */
-/* background-image: url('../assets/images/texture-marbre-bleu.jpg'); */
+

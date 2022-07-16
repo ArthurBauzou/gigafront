@@ -259,7 +259,7 @@ export class MainComponent {
     let scroll = this.messD.nativeElement.scrollTop
     let height = this.messD.nativeElement.scrollHeight
     let cheight = this.messD.nativeElement.clientHeight
-    if (scroll + cheight < height) {
+    if (scroll + cheight < height - 10) {
       this.autoscroll = false
     } else {
       this.autoscroll = true

@@ -29,9 +29,11 @@ export class CarnetComponent implements OnInit {
     size: 4
   }
   undotable:any = []
+  editObjects:fabric.Object[] = []
 
   @ViewChild('page') page!:ElementRef
-  @ViewChild('sizeInfo') sizeInfo!:ElementRef
+  @ViewChild('brushOptions') brushOptions!:ElementRef
+  @ViewChild('selectOptions') selectOptions!:ElementRef
 
   // Abonnements
   drawSub?: Subscription
@@ -40,6 +42,11 @@ export class CarnetComponent implements OnInit {
   delSub?: Subscription
 
   // FONCTIONS CALLBACKS DES LISTENERS
+  targetLayer = (e:any) => {
+    let index = 0
+    this.groups.get(this.localuser)?.forEach((g,i)=>{ if (g == e.selected[0]) {index = i} })
+    this.indexActive = index
+  }
   addObjectFromCanvas = (obj:any) => {
     this.sendObj(obj.path, this.indexActive)
     this.groups.get(this.localuser)![this.indexActive].addWithUpdate(obj.path)
@@ -81,6 +88,7 @@ export class CarnetComponent implements OnInit {
       grp.addWithUpdate(addobj)
       grp.dirty = true
     }
+    this.saveMyDocs()
     this.canvas.renderAll()
   }
 
@@ -193,7 +201,7 @@ export class CarnetComponent implements OnInit {
   saveMyDocs() {
     let doctable:fabric.Group[] = []
     this.groups.get(this.localuser)!.forEach((g)=>{
-      doctable.push(g.toJSON()) 
+      if (g._objects.length != 0) {doctable.push(g.toJSON())}
     })
     localStorage.setItem('myDocs',JSON.stringify(doctable))
   }
@@ -257,29 +265,62 @@ export class CarnetComponent implements OnInit {
 
   // OUTILS
   changeTool(type:string) {
+    this.brushOptions.nativeElement.style.display = "none"
+    this.selectOptions.nativeElement.style.display = "none"
+
     this.canvas.preserveObjectStacking = true
     this.page.nativeElement.removeEventListener('wheel', this.changeSize)
     document.removeEventListener('keydown', this.undoRedo)
     this.canvas.isDrawingMode = false
     this.canvas.selection = false
     this.canvas.discardActiveObject();
-    this.sizeInfo.nativeElement.style.display = "none"
+    this.canvas.off('selection:created', this.targetLayer)
+    this.canvas.off('selection:updated', this.targetLayer)
+
+    for (let usr of this.groups) { usr[1].forEach(g=>{
+      g.opacity = 1
+      if (usr[0] == this.localuser) {g.selectable = true}
+    })}
+    this.groups.get(this.localuser)![this.indexActive].visible = true
+    this.editObjects.forEach((o)=>{
+      this.canvas.remove(o)
+    })
+    console.log( 'avant' ,this.canvas._objects.length)
 
     this.tool.type = type;
     switch (type) {
       case 'Brush':
-        this.sizeInfo.nativeElement.style.display = "flex"
+        this.brushOptions.nativeElement.style.display = "flex"
         this.canvas.isDrawingMode = true
         this.page.nativeElement.addEventListener('wheel', this.changeSize)
         document.addEventListener('keydown', this.undoRedo)
         break;
       case 'Select': 
+        this.selectOptions.nativeElement.style.display = "flex"
         this.canvas.preserveObjectStacking = false
         this.canvas.setActiveObject(this.groups.get(this.localuser)![this.indexActive])
         this.canvas.drawControls(this.canvas.getContext())
+        this.canvas.on('selection:created', this.targetLayer)
+        this.canvas.on('selection:updated', this.targetLayer)
         break;
       case 'Cutter':
+        this.selectOptions.nativeElement.style.display = "flex"
+        this.groups.get(this.localuser)![this.indexActive].clone((g:fabric.Group)=>{
+          this.editObjects=g._objects
+        })
+        this.groups.get(this.localuser)![this.indexActive].visible = false
+        for (let usr of this.groups) { usr[1].forEach(g=>{
+          g.opacity = 0.3
+          if (usr[0] == this.localuser) {g.selectable = false}
+        })}
+        
+        this.editObjects.forEach((o)=>{
+          this.canvas.add(o)
+        })
         this.canvas.selection = true
+
+        console.log( 'après' ,this.canvas._objects.length)
+
         break;
     }
     this.canvas.renderAll();
@@ -295,6 +336,37 @@ export class CarnetComponent implements OnInit {
       this.changeTool('Select')
     }
   }
+  manualChangeSize(e:MouseEvent) {
+    let rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    let clicpos:number =  (e.clientX - rect.left) / (e.currentTarget as HTMLElement).clientWidth
+    if (clicpos >= 0.5 && this.tool.size < 10) { this.tool.size += 1 }
+    else if (clicpos < 0.5 && this.tool.size > 1) { this.tool.size -= 1 }
+    this.canvas.freeDrawingBrush.width = this.sizePalette[this.tool.size-1]
+  }
+  manualUndoRedo(e:MouseEvent) {
+    let grp = this.groups.get(this.localuser)![this.indexActive]
+    if ((e.target as HTMLElement).classList.contains('fa-rotate-left') && grp._objects.length > 0) {
+      let rmobj = grp._objects[grp._objects.length-1]
+      this.undotable.push(rmobj)
+      grp.removeWithUpdate(rmobj)
+      if (this.undotable.length > 20) {this.undotable.shift()}
+      grp.dirty = true
+      this._socketioService.sendDeletion({
+        type: 'undo',
+        userid: this.localuser,
+        index: this.indexActive
+      })
+    }
+    if ((e.target as HTMLElement).classList.contains('fa-rotate-right') && this.undotable.length > 0) {
+      let addobj = this.undotable.pop()
+      this.sendObj(addobj, this.indexActive)
+      grp.addWithUpdate(addobj)
+      grp.dirty = true
+    }
+    this.saveMyDocs()
+    this.canvas.renderAll()
+  }
+
 
   // UTILITAIRES
   canvasResize() {

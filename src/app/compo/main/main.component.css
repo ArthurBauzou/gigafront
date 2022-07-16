@@ -190,6 +190,13 @@ div.quote i {
     height: 18px;
     scrollbar-width: thin;
 }
+::-webkit-scrollbar {
+    width: 8px;
+    background-color: #343434;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #838383;
+}
 .messageInput button {
     flex: 1;
     border: none;
@@ -201,6 +208,7 @@ div.quote i {
 #colorpicker {
     width: 24px;
     position: relative;
+    z-index: 3;
 }
 #colorpicker>div {
     position: absolute;
