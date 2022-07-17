@@ -10,6 +10,7 @@ export class SocketioService {
 
   socket:any;
 
+  private perm$ = new Subject<any>()
   private message$ = new Subject<Message>()
   private users$ = new Subject<any>()
   private diceRes$ = new Subject<any>()
@@ -21,6 +22,9 @@ export class SocketioService {
   constructor() { }
 
   // FONCTIONS D’OBSERVABLES
+  watchPermission() {
+    return this.perm$.asObservable()
+  }
   watchMessages() {
     return this.message$.asObservable()
   }
@@ -67,10 +71,14 @@ export class SocketioService {
   editLayers(layerobj:any) {
     this.socket.emit('layers0', layerobj)
   }
+  requestIni(userid:string) {
+    this.socket.emit('inidata', userid)
+  }
 
   setupSocketConnection(user:any) {
     this.socket = io('http://glub.fr:3000')
     this.socket.emit('join0', user)
+    this.socket.on('permission', (perm:any)=>{this.perm$.next(perm)})
     this.socket.on('msg0', (msg:any) => { this.message$.next(msg) })
     this.socket.on('dice1', (res:any) => { this.diceRes$.next(res) })
     this.socket.on('user0', (userlist:any) => { this.users$.next(userlist) })

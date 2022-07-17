@@ -65,6 +65,22 @@
     cursor: pointer;
 }
 
+.nope {
+    align-items: center;
+    margin-top: 32px;
+    border: 4px solid orange;
+    padding-right: 24px;
+}
+.nope i {
+    font-size: 42px;
+    padding-right: 32px;
+    color: orange;
+    padding-left: 24px;
+}
+.nope p {
+    font-size: 13px;
+}
+
 @media screen and (max-width: 800px) {
 
     .loginWindow {

@@ -13,19 +13,20 @@ export class AppComponent {
     fr: ''
   }
 
-  userid:string = this._userService.user.id
+  userid:string = ''
   userSub:Subscription
 
   constructor(
-    private _userService: UserService
+    private _userService: UserService,
+
   ) {
     this.userSub = this._userService.watchUser().subscribe((user) => {
       this.userid = user.id
     })
-    this.getRandomLogo()
   }
-
+  
   ngOnInit() {
+    this.getRandomLogo()
     if (this._userService.checkToken() && this._userService.checkParams().autoreco == 'oui') {
       this._userService.reconnect()
     }

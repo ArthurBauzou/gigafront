@@ -141,21 +141,24 @@ div.quote i {
 }
 .userlistDisplay>div {
     position: relative;
-}
-.userlistDisplay p {
+    width: 42px;
+    height: 42px;
     margin: 5px auto;
-    font-weight: 600;
-    font-size: 18px;
-    color:white;
-    padding: 8px;
     border-radius: 50%;
+    align-content: space-evenly;
     text-align: center;
-    width: 24px;
+}
+.userlistDisplay span {
+    font-weight: 600;
+    font-size: 16px;
+    color:white;
+    position: relative;
+    top: 10px;
 }
 .userlistDisplay div i {
     position: absolute;
-    right: 10px;
-    top: 4px;
+    right: 1px;
+    top: -2px;
     font-size: 12px;
     color: white;
 }

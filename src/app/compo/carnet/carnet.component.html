@@ -49,10 +49,28 @@
             <i class="fa-solid fa-rotate-right"></i>
         </div>
     </div>
-    <div class="tooloption colon" #selectOptions>
+    <div class="tooloption colon" #selectOptions (click)="selectAction($event)">
         <div class="inline">
             <i class="fa-solid fa-clone"></i>
-            <i class="fa-solid fa-square-minus"></i>
+            <i class="fa-solid fa-eye-slash"></i>
+        </div>
+        <div class="inline" style="position: relative; top: 2px;">
+            <i class="fa-solid fa-trash-can" ></i>
+            <i class="fa-solid fa-user-secret"></i>
+        </div>
+        <div class="inline" style="position: relative; top: 2px;">
+            <i class="fa-solid fa-arrows-down-to-line"></i>
+            <i class="fa-solid fa-angles-up" style="opacity:0"></i>
+        </div>
+    </div>
+    <div class="tooloption colon" #cutterOptions (click)="cutterAction($event)">
+        <div class="inline">
+            <i class="fa-solid fa-angles-up"></i>
+            <i class="fa-solid fa-angles-down"></i>
+        </div>
+        <div class="inline">
+            <i class="fa-solid fa-trash-can" ></i>
+            <i class="fa-solid fa-clone" style="opacity:0"></i>
         </div>
     </div>
     <div class="toolbelt">

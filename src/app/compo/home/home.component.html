@@ -4,6 +4,10 @@
     <input type="text" id="username" name="username" ngModel maxlength="38" placeholder="entrez un nom">
     <button type="submit">Connexion</button>
   </form>
+  <div *ngIf="permission == 'NOPE'" class="inline nope">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    <p>Vous êtes <strong>déjà connecté</strong> ailleurs, si je vous laisse passer il va se passer des choses terribles et vous ne voulez pas que ça nous arrive.</p>
+  </div>
   <div *ngIf="prevUser.id" class="reconnect inline">
     <a (click)="reconnect()">
       Se reconnecter en tant que 

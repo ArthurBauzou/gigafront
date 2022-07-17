@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { SocketioService } from 'src/app/services/socketio.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -10,10 +12,17 @@ export class HomeComponent implements OnInit {
 
   prevUser = {id: '', name: '', color: ''}
   params:any = {}
+  permission:string = ''
+  socketSub:Subscription
 
   constructor(
-    private _userService: UserService
-  ) { }
+    private _userService: UserService,
+    private _socketService: SocketioService
+  ) {
+    this.socketSub = this._socketService.watchPermission().subscribe((permobj) => {
+      permobj.perm ? this._userService.logconfirm() : this.permission = 'NOPE'
+    })
+  }
 
   ngOnInit(): void {
     if (this._userService.checkToken()) {this.prevUser = this._userService.token}

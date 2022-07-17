@@ -1,3 +1,4 @@
+import { ThisReceiver } from '@angular/compiler';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { fabric } from 'fabric';
 // import { Path } from 'fabric/fabric-impl';
@@ -23,10 +24,11 @@ export class CarnetComponent implements OnInit {
   groups :Map<string,fabric.Group[]> = new Map
   layers:any[] = []
   indexActive:number = 0
+  
   tool = {
     color: this.randomColor(this.palette3),
     type: 'Brush',
-    size: 4
+    size: 5
   }
   undotable:any = []
   editObjects:fabric.Object[] = []
@@ -34,6 +36,8 @@ export class CarnetComponent implements OnInit {
   @ViewChild('page') page!:ElementRef
   @ViewChild('brushOptions') brushOptions!:ElementRef
   @ViewChild('selectOptions') selectOptions!:ElementRef
+  @ViewChild('cutterOptions') cutterOptions!:ElementRef
+  // @ViewChild('cutterDel') cutterDel!:ElementRef
 
   // Abonnements
   drawSub?: Subscription
@@ -43,9 +47,22 @@ export class CarnetComponent implements OnInit {
 
   // FONCTIONS CALLBACKS DES LISTENERS
   targetLayer = (e:any) => {
-    let index = 0
-    this.groups.get(this.localuser)?.forEach((g,i)=>{ if (g == e.selected[0]) {index = i} })
-    this.indexActive = index
+    switch (this.tool.type) {
+      case 'Select':
+        let index = 0
+        this.groups.get(this.localuser)?.forEach((g,i)=>{ if (g == e.selected[0]) {index = i} })
+        this.indexActive = index
+      break;
+      case 'Cutter':
+        this.editObjects.forEach(o=>{
+          o.opacity = 0.7
+        })
+        this.canvas.getActiveObject().opacity = 1
+      break;
+    }
+  }
+  clearSelect = (e:any) => {
+    this.editObjects.forEach(o=>{ o.opacity = 1 })
   }
   addObjectFromCanvas = (obj:any) => {
     this.sendObj(obj.path, this.indexActive)
@@ -54,11 +71,26 @@ export class CarnetComponent implements OnInit {
     this.saveMyDocs()
     this.canvas.renderAll();
   }
-  applyModif = (doc:fabric.IEvent) => {
-    // if (!doc.target) {return}
-    this.sendModif(doc.target!, this.indexActive)
+  applyModif = (mod:fabric.IEvent) => {
+    this.sendModif(mod.target!, this.indexActive)
     this.saveMyDocs()
   }
+
+  globalDelete = (e:KeyboardEvent) => {
+    if (e.key == 'Delete' && this.tool.type == 'Cutter') {
+      this._socketioService.sendDeletion({
+        type: 'cutter',
+        userid: this.localuser,
+        index: this.indexActive,
+        obj_i: this.getObjIndex()
+      })
+      // this.undotable.push(this.canvas.getActiveObject()) // HACK DEGEULASSE > CTRL+Y POUR RECUP L’OBJ
+      this.groups.get(this.localuser)![this.indexActive].removeWithUpdate(this.canvas.getActiveObject())
+      this.canvas.remove(this.canvas.getActiveObject())
+      this.canvas.discardActiveObject()
+    }
+  }
+
   changeSize = (e:WheelEvent) => {
     if (e.deltaY < 0 && this.tool.size < 10) {
       this.tool.size += 1
@@ -101,7 +133,7 @@ export class CarnetComponent implements OnInit {
       this.checkGroup(paq.userid, paq.index)
       fabric.util.enlivenObjects([paq.object], (objects:any) => {
         objects.forEach((o:fabric.Object) => { 
-          this.groups.get(paq.userid)![paq.index].addWithUpdate(o) 
+          this.groups.get(paq.userid)![paq.index].addWithUpdate(o)
         });
       }, 'fabric');
       this.canvas.renderAll();
@@ -132,16 +164,25 @@ export class CarnetComponent implements OnInit {
 
     // RECEPTION DES SUPPRESSIONS
     this.delSub = this._socketioService.watchDeletion().subscribe((delobj) => {
-      if (!this.groups.get(delobj.userid)) {console.log('rien a suppr'); return}
+      let grps = this.groups.get(delobj.userid)
+      if (!grps) {console.log('rien a suppr'); return}
       switch(delobj.type) {
         case 'all':
-          this.groups.get(delobj.userid)!.forEach(g=>{ this.canvas.remove(g) })
+          grps.forEach(g=>{ this.canvas.remove(g) })
           this.groups.set(delobj.userid, [])
           break;
-          case 'undo':
-          let grps = this.groups.get(delobj.userid)
+        case 'undo':
           let rmobj = grps![delobj.index]._objects[grps![delobj.index]._objects.length-1]
-          grps![delobj.index].removeWithUpdate(rmobj)
+          grps[delobj.index].removeWithUpdate(rmobj)
+          break;
+        case 'cutter':
+          let cutobj = grps[delobj.index]._objects[delobj.obj_i]
+          grps[delobj.index].removeWithUpdate(cutobj)
+          break;
+        case 'movez':
+          grps[delobj.index]._objects[delobj.obj_i].moveTo(delobj.targ)
+          let uRect = new fabric.Rect()
+          grps[delobj.index].add(uRect);grps[delobj.index].removeWithUpdate(uRect)
           break;
       }
       this.canvas.renderAll();
@@ -154,10 +195,19 @@ export class CarnetComponent implements OnInit {
     this.canvas = this.initCanvas('canvas1')
     this.canvas.freeDrawingBrush.color = this.tool.color;
     this.canvas.on('path:created', this.addObjectFromCanvas);
-    this.canvas.on('object:modified', this.applyModif);
+    this.canvas.on('selection:created', this.targetLayer)
+    this.canvas.on('selection:updated', this.targetLayer)
+    this.canvas.on('selection:cleared', this.clearSelect)
+    fabric.Object.prototype.set({ 
+      borderColor: 'gray',
+      cornerColor: 'gray',
+      cornerSize: 8,
+      transparentCorners: false
+    })
   }
   ngAfterViewInit() {
     this.canvasResize();
+    this._socketioService.requestIni(this.localuser)
     this.initMyDocs();
     this.sendMyDocs();
     this.changeTool('Brush');
@@ -176,8 +226,10 @@ export class CarnetComponent implements OnInit {
   // GESTION DOCUMENTS LOCAUX
   initMyDocs() {
     let newdocs:fabric.Group[] = []
+    let ndoc = new fabric.Group([],{})
+    ndoc.padding = 4
     if (!localStorage.getItem('myDocs')) {
-      newdocs.push(new fabric.Group([],{}))
+      newdocs.push(ndoc)
     }
     else {
       let myDocs = JSON.parse(localStorage.getItem('myDocs')!)
@@ -224,7 +276,6 @@ export class CarnetComponent implements OnInit {
     })
   }
 
-
   // UTILITAIRES DE SYNCHRONISATION
   checkGroup(userid:string, index:number) {
     if (!this.groups.get(userid)) {this.groups.set(userid, [])}
@@ -265,28 +316,32 @@ export class CarnetComponent implements OnInit {
 
   // OUTILS
   changeTool(type:string) {
+    // nettoyage fenêtre otpions
     this.brushOptions.nativeElement.style.display = "none"
+    this.cutterOptions.nativeElement.style.display = "none"
     this.selectOptions.nativeElement.style.display = "none"
-
-    this.canvas.preserveObjectStacking = true
+    // nettoyage brush
     this.page.nativeElement.removeEventListener('wheel', this.changeSize)
     document.removeEventListener('keydown', this.undoRedo)
     this.canvas.isDrawingMode = false
-    this.canvas.selection = false
+    // nottoyage select
+    this.canvas.preserveObjectStacking = true
     this.canvas.discardActiveObject();
-    this.canvas.off('selection:created', this.targetLayer)
-    this.canvas.off('selection:updated', this.targetLayer)
-
+    this.canvas.off('object:modified', this.applyModif)
+    // nettoyage ciseaux
+    this.canvas.selection = false
+    this.groups.get(this.localuser)![this.indexActive].visible = true
     for (let usr of this.groups) { usr[1].forEach(g=>{
       g.opacity = 1
       if (usr[0] == this.localuser) {g.selectable = true}
     })}
-    this.groups.get(this.localuser)![this.indexActive].visible = true
     this.editObjects.forEach((o)=>{
-      this.canvas.remove(o)
+      o.opacity = 1
+      this.canvas.remove(o) 
     })
-    console.log( 'avant' ,this.canvas._objects.length)
+    document.removeEventListener('keydown', this.globalDelete)    
 
+    // chargement de l’outil
     this.tool.type = type;
     switch (type) {
       case 'Brush':
@@ -300,27 +355,24 @@ export class CarnetComponent implements OnInit {
         this.canvas.preserveObjectStacking = false
         this.canvas.setActiveObject(this.groups.get(this.localuser)![this.indexActive])
         this.canvas.drawControls(this.canvas.getContext())
-        this.canvas.on('selection:created', this.targetLayer)
-        this.canvas.on('selection:updated', this.targetLayer)
+        this.canvas.on('object:modified', this.applyModif)
         break;
       case 'Cutter':
-        this.selectOptions.nativeElement.style.display = "flex"
-        this.groups.get(this.localuser)![this.indexActive].clone((g:fabric.Group)=>{
-          this.editObjects=g._objects
-        })
-        this.groups.get(this.localuser)![this.indexActive].visible = false
-        for (let usr of this.groups) { usr[1].forEach(g=>{
-          g.opacity = 0.3
-          if (usr[0] == this.localuser) {g.selectable = false}
+        this.canvas.preserveObjectStacking = false
+        this.cutterOptions.nativeElement.style.display = "flex"
+        this.editObjects = this.groups.get(this.localuser)![this.indexActive]._objects
+        for (let usr of this.groups) { usr[1].forEach((g,i)=>{
+          g.opacity = 0.2
+          if (usr[0] == this.localuser) { g.selectable = false }
         })}
-        
-        this.editObjects.forEach((o)=>{
+        this.groups.get(this.localuser)![this.indexActive].opacity = 1
+        this.groups.get(this.localuser)![this.indexActive].visible = false
+        this.editObjects.forEach((o:any)=>{
           this.canvas.add(o)
+          o.hasControls = false
+          o.lockMovementX = o.lockMovementY = true
         })
-        this.canvas.selection = true
-
-        console.log( 'après' ,this.canvas._objects.length)
-
+        document.addEventListener('keydown', this.globalDelete)
         break;
     }
     this.canvas.renderAll();
@@ -332,6 +384,7 @@ export class CarnetComponent implements OnInit {
   }
   changeActiveLayer(layer:any) {
     if(layer.userid == this.localuser) { 
+      if (this.tool.type == 'Cutter') { this.groups.get(this.localuser)![this.indexActive].visible = true }
       this.indexActive = layer.index 
       this.changeTool('Select')
     }
@@ -366,12 +419,53 @@ export class CarnetComponent implements OnInit {
     this.saveMyDocs()
     this.canvas.renderAll()
   }
+  cutterAction(e:MouseEvent) {
+    let grp = this.groups.get(this.localuser)![this.indexActive]
+    let uRect = new fabric.Rect()
+    if (this.canvas.getActiveObject() == null) { console.log('pas d’objet selectionné') ; return }
+    let delobj:any = {userid: this.localuser, index: this.indexActive, obj_i: this.getObjIndex()}
+    if ((e.target as HTMLElement).classList.contains('fa-trash-can')) {
+      delobj.type = 'cutter'
+      // this.undotable.push(this.canvas.getActiveObject()) // HACK DEGEULASSE > CTRL+Y POUR RECUP L’OBJ
+      grp.remove(this.canvas.getActiveObject())
+      this.canvas.remove(this.canvas.getActiveObject())
+    }
+    if ((e.target as HTMLElement).classList.contains('fa-angles-up')) {
+      delobj.type = 'movez'
+      delobj.targ = grp._objects.length-1
+      this.canvas.getActiveObject().moveTo(grp._objects.length-1)
+    }
+    if ((e.target as HTMLElement).classList.contains('fa-angles-down')) {
+      delobj.type = 'movez'
+      delobj.targ = 0
+      this.canvas.getActiveObject().moveTo(0)
+    }
+
+    this._socketioService.sendDeletion(delobj)
+    this.canvas.discardActiveObject()
+    grp.add(uRect);grp.removeWithUpdate(uRect)
+    this.editObjects.forEach((o)=>{ this.canvas.remove(o) })
+    this.editObjects = grp._objects
+    this.editObjects.forEach((o)=>{ this.canvas.add(o) })
+  }
+  selectAction(e:MouseEvent) {
+
+  }
 
 
   // UTILITAIRES
+  getObjIndex() {
+    let objs = this.groups.get(this.localuser)![this.indexActive]._objects
+    let index = -1
+    objs.forEach((o,i)=>{
+      if (this.canvas.getActiveObject() == o) { index = i }
+    })
+    return index
+  }
   canvasResize() {
     this.canvas.setHeight(this.page.nativeElement.clientHeight - 48)
     this.canvas.setWidth(this.page.nativeElement.clientWidth - 48)
+    this.canvas.calcOffset()
   }
   randomColor(list:string[]):string {
     let col:string = list[Math.floor(Math.random()*list.length)]

@@ -66,14 +66,15 @@ export class UserService {
     this.user.name = username
     this.user.id = this._utilService.generateId()
     this.user.color = this._utilService.randomColor(this._utilService.colorlist)
-    this.user$.next(this.user)
     this._socketService.setupSocketConnection(this.user);  
+  }
+  logconfirm() {
+    this.user$.next(this.user)
   }
   reconnect() {
     this.user.name = this.token.name;
     this.user.color = this.token.color;
     this.user.id = this.token.id;
-    this.user$.next(this.user)
     this._socketService.setupSocketConnection(this.user);
   }
   purgeToken() {
