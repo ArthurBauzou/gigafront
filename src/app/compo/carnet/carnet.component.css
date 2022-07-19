@@ -24,7 +24,6 @@
     background: rgba(255, 255, 255, 0.5);
     display: flex;
     flex-flow: row wrap;
-    padding-left: 32px;
 }
 .documents .doc {
     height: 20px;
@@ -38,13 +37,24 @@
     justify-content: flex-end;
     font-size: 8px;
     font-weight: 800;
-    /* padding-right: 2px; */
     background: rgba(0, 0, 0, 0.8);
     background-clip: padding-box;
     padding: 1px 3px;
 }
 .documents .doc.active {
     border-color: white;
+}
+.documents .doc.factive {
+    border-color: white;
+    border-style: dashed;
+}
+.documents .slidelayer {
+    font-size: 24px;
+    padding: 4px 12px;
+    color:#808080;
+}
+.documents .slidelayer:hover {
+    color: white;
 }
 
 .saveload {
@@ -170,6 +180,9 @@
 .tooloption i:hover {
     color: rgb(180, 180, 180);
 }
+.tooloption .layerhid {
+    color: white;
+}
 
 
 @media screen and (max-width: 800px) {
@@ -181,5 +194,11 @@
 @media screen and (max-width: 1128px) {
     .colorOpt {
         width: 100%;
+    }
+}
+
+@media screen and (min-width: 1700px) {
+    .colorOpt {
+        width: 40%;
     }
 }

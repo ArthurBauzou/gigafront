@@ -1,7 +1,5 @@
-import { ThisReceiver } from '@angular/compiler';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { fabric } from 'fabric';
-// import { Path } from 'fabric/fabric-impl';
 import { Subscription } from 'rxjs';
 import { SocketioService } from 'src/app/services/socketio.service';
 import { UserService } from 'src/app/services/user.service';
@@ -24,6 +22,17 @@ export class CarnetComponent implements OnInit {
   groups :Map<string,fabric.Group[]> = new Map
   layers:any[] = []
   indexActive:number = 0
+  foreignLayer = {index: -1, userid: ''}
+  foreignBoundingRect:fabric.Rect = new fabric.Rect({
+    fill: 'transparent',
+    stroke: 'gray',
+    opacity: 0.4,
+    strokeDashArray: [5, 5],
+    strokeWidth: 2,
+    selectable: false
+  })
+  // layerHideTable:any = {}
+  // loadLayer = false
   
   tool = {
     color: this.randomColor(this.palette3),
@@ -49,6 +58,7 @@ export class CarnetComponent implements OnInit {
   targetLayer = (e:any) => {
     switch (this.tool.type) {
       case 'Select':
+        this.purgeForeignBounding()
         let index = 0
         this.groups.get(this.localuser)?.forEach((g,i)=>{ if (g == e.selected[0]) {index = i} })
         this.indexActive = index
@@ -61,7 +71,7 @@ export class CarnetComponent implements OnInit {
       break;
     }
   }
-  clearSelect = (e:any) => {
+  clearSelect = () => {
     this.editObjects.forEach(o=>{ o.opacity = 1 })
   }
   addObjectFromCanvas = (obj:any) => {
@@ -89,6 +99,8 @@ export class CarnetComponent implements OnInit {
       this.canvas.remove(this.canvas.getActiveObject())
       this.canvas.discardActiveObject()
     }
+    this.saveMyDocs()
+    this.canvas.renderAll()
   }
 
   changeSize = (e:WheelEvent) => {
@@ -143,13 +155,25 @@ export class CarnetComponent implements OnInit {
     this.modifSub = this._socketioService.watchModif().subscribe((paq) => {
       this.checkGroup(paq.userid, paq.index)
       let amod = this.groups.get(paq.userid)![paq.index];
-      amod.top = paq.modif.top
-      amod.left = paq.modif.left
-      amod.angle = paq.modif.angle
-      amod.scaleX = paq.modif.scaleX
-      amod.scaleY = paq.modif.scaleY
-      amod.flipX = paq.modif.flipX
-      amod.flipY = paq.modif.flipY
+      amod.set({
+        top: paq.modif.top,
+        left: paq.modif.left,
+        angle: paq.modif.angle,
+        scaleX: paq.modif.scaleX,
+        scaleY: paq.modif.scaleY,
+        flipX: paq.modif.flipX,
+        flipY: paq.modif.flipY
+      })
+      if (this.foreignLayer.userid == paq.userid && this.foreignLayer.index == paq.index) {
+        amod.setCoords()
+        let bound = amod.getBoundingRect()
+        this.foreignBoundingRect.set({
+          left: bound.left - 5,
+          top: bound.top - 5,
+          width: bound.width + 10,
+          height: bound.height + 10
+        })
+      }
       this.canvas.renderAll();
     })
 
@@ -157,9 +181,11 @@ export class CarnetComponent implements OnInit {
     this.layersSub = this._socketioService.watchLayers().subscribe((layersobj) => {
       this.layers = layersobj
       this.layers.forEach((l:any,i:number)=>{
+        // this.layerHideTable[l.userid] = this.layerHideTable[l.userid] || []
         this.checkGroup(l.userid, l.index)
         this.groups.get(l.userid)![l.index].moveTo(i)
       })
+      // this.loadLayer = true
     })
 
     // RECEPTION DES SUPPRESSIONS
@@ -220,6 +246,13 @@ export class CarnetComponent implements OnInit {
       preserveObjectStacking: true
     });
     return can
+  }
+  ngOnDestroy() {
+    console.log('destroy')
+    this.delSub?.unsubscribe()
+    this.modifSub?.unsubscribe()
+    this.layersSub?.unsubscribe()
+    this.drawSub?.unsubscribe()
   }
 
 
@@ -330,7 +363,11 @@ export class CarnetComponent implements OnInit {
     this.canvas.off('object:modified', this.applyModif)
     // nettoyage ciseaux
     this.canvas.selection = false
+    // if (this.loadLayer && this.layerHideTable[this.localuser][this.indexActive] != true) {
+    //   this.groups.get(this.localuser)![this.indexActive].visible = true
+    // }
     this.groups.get(this.localuser)![this.indexActive].visible = true
+
     for (let usr of this.groups) { usr[1].forEach(g=>{
       g.opacity = 1
       if (usr[0] == this.localuser) {g.selectable = true}
@@ -345,6 +382,7 @@ export class CarnetComponent implements OnInit {
     this.tool.type = type;
     switch (type) {
       case 'Brush':
+        this.purgeForeignBounding()
         this.brushOptions.nativeElement.style.display = "flex"
         this.canvas.isDrawingMode = true
         this.page.nativeElement.addEventListener('wheel', this.changeSize)
@@ -352,12 +390,15 @@ export class CarnetComponent implements OnInit {
         break;
       case 'Select': 
         this.selectOptions.nativeElement.style.display = "flex"
-        this.canvas.preserveObjectStacking = false
-        this.canvas.setActiveObject(this.groups.get(this.localuser)![this.indexActive])
-        this.canvas.drawControls(this.canvas.getContext())
-        this.canvas.on('object:modified', this.applyModif)
+        if (this.foreignLayer.userid == '') {
+          this.canvas.preserveObjectStacking = false
+          this.canvas.setActiveObject(this.groups.get(this.localuser)![this.indexActive])
+          this.canvas.drawControls(this.canvas.getContext())
+          this.canvas.on('object:modified', this.applyModif)
+        }
         break;
       case 'Cutter':
+        this.purgeForeignBounding()
         this.canvas.preserveObjectStacking = false
         this.cutterOptions.nativeElement.style.display = "flex"
         this.editObjects = this.groups.get(this.localuser)![this.indexActive]._objects
@@ -383,11 +424,35 @@ export class CarnetComponent implements OnInit {
     this.changeTool('Brush');
   }
   changeActiveLayer(layer:any) {
-    if(layer.userid == this.localuser) { 
-      if (this.tool.type == 'Cutter') { this.groups.get(this.localuser)![this.indexActive].visible = true }
-      this.indexActive = layer.index 
-      this.changeTool('Select')
+    this.purgeForeignBounding()
+    if (this.tool.type == 'Cutter') { 
+      // if (this.layerHideTable[this.localuser][this.indexActive] != true) {
+      //   this.groups.get(this.localuser)![this.indexActive].visible = true
+      // } 
+      this.groups.get(this.localuser)![this.indexActive].visible = true
     }
+    if(layer.userid == this.localuser) { 
+      this.indexActive = layer.index 
+      this.foreignLayer = {index: -1, userid: ''}
+    }
+    else {
+      this.canvas.discardActiveObject();
+      this.foreignLayer = {userid: layer.userid, index: layer.index}
+      this.groups.get(this.foreignLayer.userid)![this.foreignLayer.index].setCoords()
+      let bound = this.groups.get(this.foreignLayer.userid)![this.foreignLayer.index].getBoundingRect()
+      this.foreignBoundingRect.set({
+        left: bound.left - 5,
+        top: bound.top - 5,
+        width: bound.width + 10,
+        height: bound.height + 10
+      })
+      this.canvas.add(this.foreignBoundingRect)
+    }
+    this.changeTool('Select')
+  }
+  purgeForeignBounding() {
+    this.canvas.remove(this.foreignBoundingRect)
+    this.foreignLayer = {index: -1, userid: ''}
   }
   manualChangeSize(e:MouseEvent) {
     let rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
@@ -447,13 +512,35 @@ export class CarnetComponent implements OnInit {
     this.editObjects.forEach((o)=>{ this.canvas.remove(o) })
     this.editObjects = grp._objects
     this.editObjects.forEach((o)=>{ this.canvas.add(o) })
+
+    this.saveMyDocs()
+    this.canvas.renderAll()
   }
   selectAction(e:MouseEvent) {
+    // if ((e.target as HTMLElement).classList.contains('fa-eye-slash')) {
+    //   let index = this.foreignLayer.userid == '' ? this.indexActive : this.foreignLayer.index
+    //   let userid = this.foreignLayer.userid == '' ? this.localuser : this.foreignLayer.userid
+    //   let hidden = this.layerHideTable[userid][index]
+    //   if (hidden) {this.layerHideTable[userid][index] = false ; this.groups.get(userid)![index].visible = true}
+    //   else {this.layerHideTable[userid][index] = true ; this.groups.get(userid)![index].visible = false}
+
+    //   console.log(this.layerHideTable)
+    //   this.canvas.renderAll()
+    // }
+  }
+  moveLayer(direction:string) {
 
   }
 
 
   // UTILITAIRES
+  // isHidden() {
+  //   let index = this.foreignLayer.userid == '' ? this.indexActive : this.foreignLayer.index
+  //   let userid = this.foreignLayer.userid == '' ? this.localuser : this.foreignLayer.userid
+  //   let hidden = this.layerHideTable[userid][index] ? true : false
+
+  //   return hidden
+  // }
   getObjIndex() {
     let objs = this.groups.get(this.localuser)![this.indexActive]._objects
     let index = -1

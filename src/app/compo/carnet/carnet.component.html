@@ -5,14 +5,19 @@
 </div>
 <div class="docbar inline">
     <div class="documents">
-        <div class="dropdiv"></div>
+        <div class="slidelayer">
+            <i class="fa-solid fa-chevron-left"></i>
+        </div>
         <div class="doc" draggable="true"
         *ngFor="let l of layers.slice().reverse()" 
         [style.color]="l.color"
-        [ngClass]="{active:l.index == indexActive && l.userid == localuser}"
+        [ngClass]="{active:l.index == indexActive && l.userid == localuser && foreignLayer.userid == '',
+                    factive: l.index == foreignLayer.index && l.userid == foreignLayer.userid }"
         (click)="changeActiveLayer(l)">
             <span>{{l.username | slice:0:1}}{{l.index}}</span>
-            
+        </div>
+        <div class="slidelayer" style="margin-left:auto">
+            <i class="fa-solid fa-chevron-right"></i>
         </div>
     </div>
     <div class="saveload inline">
@@ -52,6 +57,7 @@
     <div class="tooloption colon" #selectOptions (click)="selectAction($event)">
         <div class="inline">
             <i class="fa-solid fa-clone"></i>
+            <!-- <i class="fa-solid fa-eye-slash" [ngClass]="{'layerhid':isHidden() == true}" *ngIf="loadLayer"></i> -->
             <i class="fa-solid fa-eye-slash"></i>
         </div>
         <div class="inline" style="position: relative; top: 2px;">
